@@ -47,10 +47,34 @@
 #include "stm32f0xx.h"
 #include <stdint.h>
 
+#define STRING0  0
+#define STRING1  1
+#define STRING2  2
+#define STRING3  3
+#define STRING4  4
+#define STRING5  5
+#define STRING6  6
+#define STRING7  7
+#define STRING8  8
+#define STRING9  9
+#define STRING10 10
+#define STRING11 11
+
+uint8_t buffer0;
+uint8_t buffer1;
+uint8_t buffer2;
+uint8_t buffer3;
+
+typedef struct ActiveNotes {
+    int SomeData;
+    struct ActiveNotes *next;
+    struct ActiveNotes *back;
+} ActiveNotes;
+
 void initb();
-void setn(int32_t pin_num, int32_t val);
-int32_t readpin(int32_t pin_num);
-void buttons(void);
+void strings(void);
+void setup_serial(void);
+void sendMIDI(uint8_t  channel, uint8_t  note, uint8_t  velocity);
 
 void internal_clock(void);
 
@@ -58,13 +82,12 @@ int main(void) {
     
   internal_clock();
   initb();
+  setup_serial();
 
   while(1) 
   {
-    buttons();
+    strings();
   }
-
-    for(;;);
     
     return 0;
 }
@@ -85,10 +108,10 @@ void initb()
   RCC -> AHBENR |= RCC_AHBENR_GPIOBEN;
 
   // SET 0-3 to INPUT and RESET 4-7
-  GPIOB -> MODER &= 0xFFFF0000;
+  GPIOB -> MODER &= 0x00000000;
   
-  // set 4-7 to output
-  GPIOB -> MODER |= 0x00005500;
+  // set 8-11 to output for Demo
+  GPIOB -> MODER |= GPIO_MODER_MODER8_0 | GPIO_MODER_MODER9_0 | GPIO_MODER_MODER10_0 | GPIO_MODER_MODER11_0;
 
   // PUPDR
   // 00: No pull-up, pull-down
@@ -98,33 +121,85 @@ void initb()
 
   // CURRENTLY SET TO PULL-DOWN FOR BUTTONS
   // WHEN STRINGS REPLACE BUTTONS SET TO PULL-UP
-  GPIOB -> PUPDR &= 0xFFFFFFAA;
-
+  GPIOB -> PUPDR &= 0xFFFFFF55;
 }
 
-// TEMP FUNCTION FOR READABILITY AND TESTING INPUTS
-// REPLACE LATER WITH HARDCODING FOR EACH STRING
-void setn(int32_t pin_num, int32_t val) 
-{  
-  if (val)
-    GPIOB -> BSRR |= 1<<pin_num;
-  else
-    GPIOB -> BRR |= 1<<pin_num;
-}
+// Strings
+// Example of 1 strign what i should be
+// if true -> Trigger note generation
+// Have logic in note generation for if true -> detect 0 before allowed to be true again.
 
-// READING AN INPUT
-int32_t readpin(int32_t pin_num) 
+// Create linked list struct for playing notes
+
+void strings(void) 
 {
-  if ((GPIOB -> IDR) & (1 << pin_num))
-    return 1;
-  return 0;
+  // String 0 - Output is B11
+  if ((GPIOB -> IDR) & (1 << STRING0))  buffer0 = 0;             
+  else if (buffer0 == 0)                {sendMIDI(0,60,100); buffer0 = 1;}
+  if ((GPIOB -> IDR) & (1 << STRING1))  buffer1 = 0;             
+  else if (buffer1 == 0)                {sendMIDI(0,63,100); buffer1 = 1;}
+  if ((GPIOB -> IDR) & (1 << STRING2))  buffer2 = 0;             
+  else if (buffer2 == 0)                {sendMIDI(0,64,100); buffer2 = 1;}
+  if ((GPIOB -> IDR) & (1 << STRING3))  buffer3 = 0;             
+  else if (buffer3 == 0)                {sendMIDI(0,67,100); buffer3 = 1;}
 }
 
-void buttons(void) 
+void sendMIDI(uint8_t  channel, uint8_t  note, uint8_t  velocity)
 {
-  // set value of pin 4 to the current input of pin 0 and so on 
-  setn(4, readpin(0));
-  setn(5, readpin(1));
-  setn(6, readpin(2));
-  setn(7, readpin(3));
+    while (!(USART5->ISR & USART_ISR_TXE));  // Wait until TX buffer empty
+    USART5->TDR = 0x90 | (channel & 0x0F); 
+    while (!(USART5->ISR & USART_ISR_TXE));  // Wait until TX buffer empty
+    USART5->TDR = note; 
+    while (!(USART5->ISR & USART_ISR_TXE));  // Wait until TX buffer empty
+    USART5->TDR = velocity; 
 }
+
+void setup_serial(void)
+{
+    RCC -> AHBENR |= RCC_AHBENR_GPIOCEN;
+
+    GPIOC -> MODER &= ~(GPIO_MODER_MODER12);
+    GPIOC -> MODER |= GPIO_MODER_MODER12_1;
+
+    // SET TO HIGH SPEED?
+    // GPIOC -> OSPEEDR |= GPIO_OSPEEDR_OSPEEDR12_1 | GPIO_OSPEEDR_OSPEEDR12_0;
+
+    GPIOC -> AFR[1] &= ~GPIO_AFRH_AFRH4;
+    GPIOC -> AFR[1] |= 1 << (1 + GPIO_AFRH_AFRH4_Pos);
+
+    // RCC -> AHBENR |= RCC_AHBENR_GPIODEN;     // LAB MANUAL HAS RE, DO WE NEED? RECIVER
+    // GPIOD -> MODER &= ~GPIO_MODER_MODER2;
+    // GPIOD -> MODER |= GPIO_MODER_MODER2_1;
+
+    // GPIOD -> AFR[0] &= ~GPIO_AFRL_AFRL2;
+    // GPIOD -> AFR[0] |= 1 << (1 + GPIO_AFRL_AFRL2_Pos);
+
+    RCC -> APB1ENR |= RCC_APB1ENR_USART5EN;
+
+    USART5->CR1 &= ~USART_CR1_UE; // Dissable UE, set UE = 0
+
+    USART5->CR1 &= ~(USART_CR1_M1 | USART_CR1_M0); // Set word size of 8 bits
+
+    USART5->CR1 &= ~USART_CR1_OVER8; // SET TO 16X OVERSAMPLING
+
+    USART5->CR1 &= ~USART_CR1_PCE; // PARITY DISSABLED
+
+    USART5->CR2 &= ~(USART_CR2_STOP_0 | USART_CR2_STOP_1); // 1 STOP BIT
+
+    // bAUD RATE 31250 IN BRR REGISTER
+    // USART5 -> BRR = 417; THIS IS 115200 BAUD IN LAB
+    USART5 -> BRR = 1536;
+    
+    USART5->CR1 |= USART_CR1_TE;
+    // USART5->CR1 |= USART_CR1_RE; // LAB MANUAL HAS RE, DO WE NEED? rECIVER
+
+    USART5->CR1 |= USART_CR1_UE; // Enable UE, set UE = 1
+
+    while (!((USART5 -> ISR) & (USART_ISR_TEACK 
+                          //  | USART_ISR_REACK // DO WE NEED RE?
+                                                  )));
+}
+
+// QUESTIONS?
+// HOW DO I SET TO 31250 BAUD?
+// DO I SET PC12 TO HIGH SPEED?
