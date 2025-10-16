@@ -8,6 +8,13 @@
 #include "stm32f0xx.h"
 #include <stdint.h>
 
+// From Justin
+#include <stdio.h>
+#include "fifo.h"
+#include "tty.h"
+#include "commands.h"
+#include "lcd.h"
+
 uint8_t buffer0 = 0;
 uint8_t buffer1 = 0;
 uint8_t buffer2 = 0;
@@ -20,6 +27,8 @@ uint8_t buffer7 = 0;
 uint8_t octave = 3;
 uint8_t bufferOctave0 = 0;
 uint8_t bufferOctave1 = 0;
+uint8_t bufferSettings0 = 0;
+uint8_t bufferSettings1 = 0;
 
 uint8_t note0 = 60;
 uint8_t note1 = 62;
@@ -30,12 +39,42 @@ uint8_t note5 = 69;
 uint8_t note6 = 71;
 uint8_t note7 = 72;
 
+uint8_t BPM = 60;
+uint8_t Mstatus = 0;
+
+// From Justin
+char octaves[7] = {'1','2','3', '4', '5', '6', '7'};
+char modes[5] = {'A', 'B', 'C', 'D', 'E'};
+char metros[4] = {'4', '3', '5', '7'};
+
+uint8_t modeidx = 0;
+uint8_t metroidx = 0;
+
 void inita();
 void initc();
 void strings(void);
-void buttons(void);
+void buttons_octaves(void);
+
+void setOctave(void);
+void buttons_settings(void);
 void setup_serial(void);
 void sendMIDI(uint8_t channel, uint8_t note, uint8_t velocity);
+
+// Metronome
+void init_tim6_metronome(void);
+void TIM6_DAC_IRQHandler(void);
+void set_bpm(void);
+void toggleMetronome(void);
+
+// From Justin
+void disp_begin();
+void disp_harp();
+void init_clear();
+void init_lcd_spi();
+void dispUI(char octave, char metro, char mode);
+
+void init_spi1_slow (void);
+void init_lcd_spi (void);
 
 void internal_clock(void);
 
@@ -46,14 +85,130 @@ int main(void)
   inita();
   initc();
   setup_serial();
+  init_tim6_metronome();
+
+  // From Justin
+
+  init_lcd_spi();
+  LCD_Setup();
+  disp_harp();
+
+  toggleMetronome();
 
   while (1)
   {
     strings();
-    buttons();
+    buttons_octaves();
+    if ((GPIOC->IDR) & (1))
+    {
+      buttons_settings();
+    }
   }
 
   return 0;
+}
+
+void buttons_settings(void)
+{
+  bufferSettings0 = 1;
+  while ((GPIOC->IDR) & (1))
+    bufferSettings0 = 1;
+
+  int loop = 1;
+  while (loop)
+  {
+    if ((GPIOC->IDR) & (1)){
+      bufferSettings0 = 0;
+    }
+    else if (bufferSettings0 == 0)
+    {
+      bufferSettings0 = 1;
+      loop = 0;
+    }
+
+    if ((GPIOC->IDR) & (1 << 2))
+      bufferOctave0 = 0;
+    else if (bufferOctave0 == 0)
+    {
+      bufferOctave0 = 1;
+      BPM += 10;
+      if ((BPM != 0) && (Mstatus == 0))
+      {
+        Mstatus = 1;
+        toggleMetronome();
+      }
+      if (BPM > 220)
+        BPM = 220; 
+      set_bpm();
+    }
+
+    if ((GPIOC->IDR) & (1 << 3))
+      bufferOctave1 = 0;
+    else if (bufferOctave1 == 0)
+    {
+      bufferOctave1 = 1;
+      if (BPM != 0)
+        BPM -= 10;
+      if (BPM == 0)
+      {
+        Mstatus = 0;
+        toggleMetronome();
+      }
+      set_bpm();
+    }
+  }
+
+  bufferOctave0 = 0;
+  bufferOctave1 = 0;
+}
+
+// METRONOME
+
+void toggleMetronome(void)
+{
+  if (Mstatus)
+  {
+    TIM6->CNT = 0;              // reset counter
+    TIM6->SR &= ~TIM_SR_UIF;    // clear flag
+    TIM6->CR1 |= TIM_CR1_CEN;   // enable counter
+    dispUI(octaves[octave],'Y', modes[modeidx]);
+  }
+  else{
+    TIM6->CR1 &= ~TIM_CR1_CEN;
+    dispUI(octaves[octave],'N', modes[modeidx]);
+  }
+}
+
+void init_tim6_metronome(void)
+{
+  RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+
+  TIM6->PSC = 48000 - 1;
+  TIM6->ARR = (60000 / BPM) - 1;
+
+  TIM6->DIER |= TIM_DIER_UIE;
+  TIM6->CR1  |= TIM_CR1_CEN;
+
+  NVIC_EnableIRQ(TIM6_DAC_IRQn);
+}
+
+// METRONOME
+void TIM6_DAC_IRQHandler(void) {
+  TIM6->SR &= ~TIM_SR_UIF; // clear interrupt flag
+  sendMIDI(0x90, 84, 100); // Note On      
+}
+
+// Metronome
+void set_bpm(void) {
+    if (Mstatus == 1)
+    {
+      Mstatus = 0;
+      toggleMetronome();
+      TIM6->ARR = (60000 / BPM) - 1;
+      Mstatus = 1;
+      toggleMetronome();
+    }
+      
 }
 
 void inita()
@@ -83,8 +238,8 @@ void inita()
 void initc()
 {
   RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-  GPIOC->MODER &= 0xFFFFFF0F;
-  GPIOC->PUPDR &= 0xFFFFFF5F;
+  GPIOC->MODER &= 0xFFFFFF00;
+  GPIOC->PUPDR &= 0xFFFFFF55;
 }
 
 void strings(void)
@@ -155,24 +310,18 @@ void strings(void)
   }
 }
 
-void buttons()
+void buttons_octaves()
 {
   if ((GPIOC->IDR) & (1 << 2))
     bufferOctave0 = 0;
   else if (bufferOctave0 == 0)
   {
     bufferOctave0 = 1;
-    if (octave < 7)
+    if (octave < 7) // max is 7
     {
       octave++;
-      note0 = (octave + 2) * 12;
-      note1 = (octave + 2) * 12 + 2;
-      note2 = (octave + 2) * 12 + 4;
-      note3 = (octave + 2) * 12 + 5;
-      note4 = (octave + 2) * 12 + 7;
-      note5 = (octave + 2) * 12 + 9;
-      note6 = (octave + 2) * 12 + 11;
-      note7 = (octave + 2) * 12 + 12;
+      setOctave();
+      dispUI(octaves[octave], metros[metroidx], modes[modeidx]);
     }
   }
   if ((GPIOC->IDR) & (1 << 3))
@@ -180,18 +329,91 @@ void buttons()
   else if (bufferOctave1 == 0)
   {
     bufferOctave1 = 1;
-    if (octave > 0)
+    if (octave > 1) // min is 1
     {
       octave--;
-      note0 = (octave + 2) * 12;
-      note1 = (octave + 2) * 12 + 2;
-      note2 = (octave + 2) * 12 + 4;
-      note3 = (octave + 2) * 12 + 5;
-      note4 = (octave + 2) * 12 + 6;
-      note5 = (octave + 2) * 12 + 7;
-      note6 = (octave + 2) * 12 + 9;
-      note7 = (octave + 2) * 12 + 11;
+      setOctave();
+      dispUI(octaves[octave], metros[metroidx], modes[modeidx]);
     }
+  }
+}
+
+void setOctave(void)
+{
+  switch (octave)
+  {
+  case 1:
+    note0 = 24;
+    note1 = 26;
+    note2 = 28;
+    note3 = 29;
+    note4 = 31;
+    note5 = 33;
+    note6 = 35;
+    note7 = 36;
+  break;
+  case 2:
+    note0 = 36;
+    note1 = 38;
+    note2 = 40;
+    note3 = 41;
+    note4 = 43;
+    note5 = 45;
+    note6 = 47;
+    note7 = 48;
+  break;
+  case 3:
+    note0 = 48;
+    note1 = 50;
+    note2 = 52;
+    note3 = 53;
+    note4 = 55;
+    note5 = 57;
+    note6 = 59;
+    note7 = 60;
+  break;
+  case 4:
+    note0 = 60;
+    note1 = 62;
+    note2 = 64;
+    note3 = 65;
+    note4 = 67;
+    note5 = 69;
+    note6 = 71;
+    note7 = 72;
+  break;
+  case 5:
+    note0 = 72;
+    note1 = 74;
+    note2 = 76;
+    note3 = 77;
+    note4 = 79;
+    note5 = 81;
+    note6 = 83;
+    note7 = 84;
+  break;
+  case 6:
+    note0 = 84; 
+    note1 = 86;
+    note2 = 88;
+    note3 = 89;
+    note4 = 91;
+    note5 = 93;
+    note6 = 95;
+    note7 = 96;
+  break;
+  case 7:
+    note0 = 96;
+    note1 = 98;
+    note2 = 100;
+    note3 = 101;
+    note4 = 103;
+    note5 = 105;
+    note6 = 107;
+    note7 = 108;
+  break;
+  
+// Default:
   }
 }
 
@@ -241,3 +463,29 @@ void setup_serial(void)
                             )))
     ;
 }
+
+//spi 1 for display
+void init_spi1_slow (void){
+    RCC -> AHBENR |= RCC_AHBENR_GPIOBEN;
+    GPIOB -> MODER &= ~0x00000fc0;
+    GPIOB -> MODER |= 0x00000a80;
+    GPIOB -> AFR[0] &= ~(GPIO_AFRL_AFRL3 | GPIO_AFRL_AFRL4 | GPIO_AFRL_AFRL5);
+    RCC -> APB2ENR |= RCC_APB2ENR_SPI1EN;
+    SPI1 -> CR1 &= ~SPI_CR1_SPE;
+    SPI1->CR1 &= ~(SPI_CR1_BR);
+    SPI1 -> CR1 |= SPI_CR1_MSTR;
+    SPI1 -> CR2 |= SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0;
+    SPI1 -> CR2 &= ~SPI_CR2_DS_3;
+    SPI1 -> CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;
+    SPI1 -> CR2 |= SPI_CR2_FRXTH;
+    SPI1 -> CR1 |= SPI_CR1_SPE;
+}
+
+void init_lcd_spi (void){
+    RCC -> AHBENR |= RCC_AHBENR_GPIOBEN;
+    GPIOB -> MODER &= ~0x30c30000;
+    GPIOB -> MODER |= 0x10410000;
+    init_spi1_slow();
+                                
+}
+

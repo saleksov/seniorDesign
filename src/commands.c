@@ -293,7 +293,6 @@ void disp_wordle(){
 }
 
 void disp_harp(){
-    LCD_Setup();
 
     LCD_Clear(0000, 0, 0, 0, 0);
 
@@ -313,34 +312,43 @@ void disp_harp(){
 
     LCD_DrawChar(125, 35, 0xFFFF, 0xFFFF, 'M', 16, 2);
 
-    LCD_DrawChar(265, 105, 0xFFFF, 0xFFFF, 'O', 16, 2);
+    LCD_DrawChar(105, 35, 0xFFFF, 0xFFFF, 'E', 16, 2);
 
-    LCD_DrawChar(245, 105, 0xFFFF, 0xFFFF, 'C', 16, 2);
+    LCD_DrawChar(65, 35, 0xFFFF, 0xFFFF, ':', 16, 2);
 
-    LCD_DrawChar(225, 105, 0xFFFF, 0xFFFF, 'T', 16, 2);
+    LCD_DrawChar(265, 115, 0xFFFF, 0xFFFF, 'O', 16, 2);
 
-    LCD_DrawChar(205, 105, 0xFFFF, 0xFFFF, 'A', 16, 2);
+    LCD_DrawChar(245, 115, 0xFFFF, 0xFFFF, 'C', 16, 2);
 
-    LCD_DrawChar(185, 105, 0xFFFF, 0xFFFF, 'V', 16, 2);
+    LCD_DrawChar(225, 115, 0xFFFF, 0xFFFF, 'T', 16, 2);
 
-    LCD_DrawChar(165, 105, 0xFFFF, 0xFFFF, 'E', 16, 2);
+    LCD_DrawChar(205, 115, 0xFFFF, 0xFFFF, 'A', 16, 2);
 
-    LCD_DrawChar(265, 175, 0xFFFF, 0xFFFF, 'S', 16, 2);
+    LCD_DrawChar(185, 115, 0xFFFF, 0xFFFF, 'V', 16, 2);
 
-    LCD_DrawChar(245, 175, 0xFFFF, 0xFFFF, 'I', 16, 2);
+    LCD_DrawChar(165, 115, 0xFFFF, 0xFFFF, 'E', 16, 2);
 
-    LCD_DrawChar(225, 175, 0xFFFF, 0xFFFF, 'G', 16, 2);
+    LCD_DrawChar(125, 115, 0xFFFF, 0xFFFF, ':', 16, 2);
 
-    LCD_DrawChar(205, 175, 0xFFFF, 0xFFFF, 'N', 16, 2);
+    LCD_DrawChar(265, 195, 0xFFFF, 0xFFFF, 'M', 16, 2);
 
-    LCD_DrawChar(185, 175, 0xFFFF, 0xFFFF, 'A', 16, 2);
+    LCD_DrawChar(245, 195, 0xFFFF, 0xFFFF, 'O', 16, 2);
 
-    LCD_DrawChar(165, 175, 0xFFFF, 0xFFFF, 'T', 16, 2);
+    LCD_DrawChar(225, 195, 0xFFFF, 0xFFFF, 'D', 16, 2);
 
-    LCD_DrawChar(145, 175, 0xFFFF, 0xFFFF, 'U', 16, 2);
+    LCD_DrawChar(205, 195, 0xFFFF, 0xFFFF, 'E', 16, 2);
 
-    LCD_DrawChar(125, 175, 0xFFFF, 0xFFFF, 'R', 16, 2);
+    LCD_DrawChar(165, 195, 0xFFFF, 0xFFFF, ':', 16, 2);
 
-    LCD_DrawChar(105, 175, 0xFFFF, 0xFFFF, 'E', 16, 2);
+}
 
+void dispUI (char octave, char metro, char mode){
+
+    disp_harp();
+
+    LCD_DrawChar(25, 35, 0xFFFF, 0xFFFF, metro, 16, 2);
+
+    LCD_DrawChar(85, 115, 0xFFFF, 0xFFFF, octave, 16, 2);
+
+    LCD_DrawChar(125, 195, 0xFFFF, 0xFFFF, mode, 16, 2);
 }
