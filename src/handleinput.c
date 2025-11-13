@@ -1,5 +1,142 @@
 #include "handleinput.h"
 
+void buttons()
+{
+  // Octave Down
+  if ((GPIOC->IDR) & (1 << 0))
+    bufferButton0 = 0;
+  else if (bufferButton0 == 0)
+  {
+    bufferButton0 = 1;
+    if (octave > 35 )
+    {
+      octave -= octaveStep;
+      setOctave();
+
+      //dispUI(octaves[octave], metros[metroidx], modes[modeidx]);
+    }
+  }
+
+  // Octave Up
+  if ((GPIOC->IDR) & (1 << 1))
+    bufferButton1 = 0;
+  else if (bufferButton1 == 0)
+  {
+    bufferButton1 = 1;
+    if (octave < 97) // min is 1
+    {
+      octave += octaveStep;
+      setOctave();
+
+      //dispUI(octaves[octave], metros[metroidx], modes[modeidx]);
+    }
+  }
+
+  // Clear String Sound
+  if ((GPIOC->IDR) & (1 << 2))
+    bufferButton2 = 0;
+  else if (bufferButton2 == 0)
+  {
+    bufferButton2 = 1;
+    allNotesOff(0);
+  }
+}
+
+// Button3 -> enter settings
+// Button3 -> exit settings from home menu
+// A -> Song Settings
+// B -> Metronome Settigns
+// C -> Instrument Settings
+// D -> Octave Settings
+// * -> confirm
+// # -> go back 
+// When Button 3 is pressed i need to halt the harp, save where it is at (at least halt the song)
+// and later continue where we left off
+
+void settings(void)
+{
+  if ((GPIOC->IDR) & (1<<3))
+  {
+    bufferButton3 = 1;
+  }
+}
+
+// A -> Song Settings -> * is Confirm
+// In song settings config
+// A is resume / Start
+// B is pause
+// C is +5 seconds
+// D is Play next song
+// Numbers 0-9 -> song sellect
+// * is confirm, # is back
+
+// B -> Metronome Settigns
+// A -> On
+// B -> Off
+// C -> Signature
+// D-> Set BPM
+
+// C -> Instrument Settings
+// A -> change instrument song
+// B -> change instrument strings
+
+// D -> Octave Settings 
+// A -> Set octave step (1-12), incriments all notes by octave step
+
+// {
+//   bufferSettings0 = 1;
+//   while ((GPIOC->IDR) & (1))
+//     bufferSettings0 = 1;
+
+//   int loop = 1;
+//   while (loop)
+//   {
+//     if ((GPIOC->IDR) & (1)){
+//       bufferSettings0 = 0;
+//     }
+//     else if (bufferSettings0 == 0)
+//     {
+//       bufferSettings0 = 1;
+//       loop = 0;
+//     }
+
+//     if ((GPIOC->IDR) & (1 << 2))
+//       bufferOctave0 = 0;
+//     else if (bufferOctave0 == 0)
+//     {
+//       bufferOctave0 = 1;
+//       BPM += 10;
+//       if ((BPM != 0) && (Mstatus == 0))
+//       {
+//         Mstatus = 1;
+//         toggleMetronome();
+//       }
+//       if (BPM > 220)
+//         BPM = 220; 
+//       set_bpm();
+//     }
+
+//     if ((GPIOC->IDR) & (1 << 3))
+//       bufferOctave1 = 0;
+//     else if (bufferOctave1 == 0)
+//     {
+//       bufferOctave1 = 1;
+//       if (BPM != 0)
+//         BPM -= 10;
+//       if (BPM == 0)
+//       {
+//         Mstatus = 0;
+//         toggleMetronome();
+//       }
+//       set_bpm();
+//     }
+//   }
+
+//   bufferOctave0 = 0;
+//   bufferOctave1 = 0;
+// }
+
+
 void strings(void)
 {
   // String 0 - Output is B11
@@ -99,106 +236,3 @@ void strings(void)
     bufferString11 = 1;
   }
 }
-
-void buttons()
-{
-  // Octave Down
-  if ((GPIOC->IDR) & (1 << 0))
-    bufferButton0 = 0;
-  else if (bufferButton0 == 0)
-  {
-    bufferButton0 = 1;
-    if (octave > 35 )
-    {
-      octave -= octaveStep;
-      setOctave();
-
-      //dispUI(octaves[octave], metros[metroidx], modes[modeidx]);
-    }
-  }
-
-  // Octave Up
-  if ((GPIOC->IDR) & (1 << 1))
-    bufferButton1 = 0;
-  else if (bufferButton1 == 0)
-  {
-    bufferButton1 = 1;
-    if (octave < 97) // min is 1
-    {
-      octave += octaveStep;
-      setOctave();
-
-      //dispUI(octaves[octave], metros[metroidx], modes[modeidx]);
-    }
-  }
-
-  // Clear String Sound
-  if ((GPIOC->IDR) & (1 << 2))
-    bufferButton2 = 0;
-  else if (bufferButton2 == 0)
-  {
-    bufferButton2 = 1;
-    allNotesOff(0);
-  }
-}
-
-void settings(void)
-{
-  if ((GPIOC->IDR) & (1<<3))
-  {
-    bufferButton3 = 1;
-  }
-}
-
-// {
-//   bufferSettings0 = 1;
-//   while ((GPIOC->IDR) & (1))
-//     bufferSettings0 = 1;
-
-//   int loop = 1;
-//   while (loop)
-//   {
-//     if ((GPIOC->IDR) & (1)){
-//       bufferSettings0 = 0;
-//     }
-//     else if (bufferSettings0 == 0)
-//     {
-//       bufferSettings0 = 1;
-//       loop = 0;
-//     }
-
-//     if ((GPIOC->IDR) & (1 << 2))
-//       bufferOctave0 = 0;
-//     else if (bufferOctave0 == 0)
-//     {
-//       bufferOctave0 = 1;
-//       BPM += 10;
-//       if ((BPM != 0) && (Mstatus == 0))
-//       {
-//         Mstatus = 1;
-//         toggleMetronome();
-//       }
-//       if (BPM > 220)
-//         BPM = 220; 
-//       set_bpm();
-//     }
-
-//     if ((GPIOC->IDR) & (1 << 3))
-//       bufferOctave1 = 0;
-//     else if (bufferOctave1 == 0)
-//     {
-//       bufferOctave1 = 1;
-//       if (BPM != 0)
-//         BPM -= 10;
-//       if (BPM == 0)
-//       {
-//         Mstatus = 0;
-//         toggleMetronome();
-//       }
-//       set_bpm();
-//     }
-//   }
-
-//   bufferOctave0 = 0;
-//   bufferOctave1 = 0;
-// }

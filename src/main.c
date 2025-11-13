@@ -20,6 +20,7 @@
 #include "metronome.h"
 #include "initpins.h"
 #include "songplayer.h"
+#include "support.h"
 
 uint8_t bufferString00 = 0;
 uint8_t bufferString01 = 0;
@@ -75,6 +76,8 @@ uint32_t songIndex = 0;
 uint32_t next_tick = 0;
 uint8_t song_done = 0;
 
+uint8_t col;
+
 // From Justin
 void disp_begin();
 void disp_harp();
@@ -92,6 +95,7 @@ int main(void)
   setup_serial();
   init_tim6_metronome();
   init_tim7_songDelay();
+  init_tim14_keypad();
 
   // From Justin
 
@@ -101,8 +105,10 @@ int main(void)
 
   toggleMetronome();
 
-  changeInstrument(0,4);
+  changeInstrument(0,6);
 
+  //char temp;
+  startSong();
   while (1)
   {
     strings();
@@ -111,7 +117,9 @@ int main(void)
     
     buttons();
 
-    //settings();
+    //temp = get_keypress();
+    //if (temp == 'A')
+      //debugSendNote();
   }
 
   return 0;

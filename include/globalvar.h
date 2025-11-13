@@ -61,4 +61,7 @@ extern uint32_t songIndex;
 extern uint32_t next_tick;
 extern uint8_t song_done;
 
+// keypad
+extern uint8_t col;
+
 #endif

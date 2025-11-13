@@ -34,11 +34,14 @@ void initc()
   GPIOC->MODER &= 0xFF000000;
   GPIOC->MODER |= 0x00550000;
 
+  GPIOC->OTYPER &= ~0xfff;
+  GPIOC->OTYPER |= 0xf00;
+
   // 01: Pull-up
   // 10: Pull-down
 
-  GPIOC->PUPDR &= 0xFF00FF00;
-  GPIOC->PUPDR |= 0x00AA0055;
+  GPIOC->PUPDR &= 0xFFFF0000;
+  GPIOC->PUPDR |= 0x00005555;
 }
 
 void setup_serial(void)
@@ -119,4 +122,26 @@ void TIM7_IRQHandler(void)
     TIM7->SR &= ~TIM_SR_UIF;
 
     tim7Ticks++;
+}
+
+// Keypad
+void init_tim14_keypad(void)
+{
+  RCC -> APB1ENR |= RCC_APB1ENR_TIM14EN;
+  TIM14 -> PSC = 240 -1;
+  TIM14 -> ARR = 200 -1;
+  TIM14 -> DIER |= TIM_DIER_UIE;
+  NVIC -> ISER[0] |= 1 << TIM14_IRQn;
+  TIM14 -> CR1 |= TIM_CR1_CEN;
+}
+
+void TIM14_IRQHandler() {  // this is the interrupt
+    TIM14->SR &= ~TIM_SR_UIF;  // Turn off interrupt pending bit
+    int rows = read_rows();   // get rows
+
+    update_history(col, rows);  // update history
+
+    col = (col+1) & 3;  // wrap around to 1
+    
+    drive_column(col);    // drive col
 }

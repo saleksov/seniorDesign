@@ -1,6 +1,4 @@
-#include "stm32f0xx.h"
-#include <stdio.h>
-#include <string.h> // for memmove()
+#include "support.h"
 
 void nano_wait(unsigned int n) {
     asm(    "        mov r0,%0\n"
@@ -127,12 +125,12 @@ void update_history(int c, int rows)
 
 void drive_column(int c)
 {
-    GPIOC->BSRR = 0xf00000 | ~(1 << (c + 8));
+    GPIOC->BSRR = (0xf00000 | ~(1 << (c + 8)));
 }
 
 int read_rows()
 {
-    return (~GPIOC->IDR) & 0xf0;
+    return ((~GPIOC->IDR) & 0xf0) >> 4;
 }
 
 char get_key_event(void) {

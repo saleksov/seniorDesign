@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "globalvar.h"
+#include "support.h"
 
 void inita();
 void initc();
@@ -12,5 +13,8 @@ void setup_serial(void);
 
 void init_spi1_slow (void);
 void init_lcd_spi (void);
+
+void init_tim14_keypad(void);
+
 
 #endif
