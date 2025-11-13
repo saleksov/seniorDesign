@@ -1,7 +1,6 @@
 #include "initpins.h"
 
 void inita()
-
 {
   // MODER
   // 00: Input (reset state)
@@ -22,13 +21,24 @@ void inita()
 
   // SET TO PULL-UP
   GPIOA->PUPDR &= 0xFF555555;
+  GPIOA->PUPDR |= 0x00555555;
 }
 
 void initc()
 {
   RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-  GPIOC->MODER &= 0xFFFFFF00;
-  GPIOC->PUPDR &= 0xFFFFFF55;
+
+  // 00: Input (reset state)
+  // 01: General purpose output mode
+
+  GPIOC->MODER &= 0xFF000000;
+  GPIOC->MODER |= 0x00550000;
+
+  // 01: Pull-up
+  // 10: Pull-down
+
+  GPIOC->PUPDR &= 0xFF00FF00;
+  GPIOC->PUPDR |= 0x00AA0055;
 }
 
 void setup_serial(void)
@@ -88,4 +98,25 @@ void init_lcd_spi (void){
     GPIOB -> MODER |= 0x10410000;
     init_spi1_slow();
                                 
+}
+
+// Used as 1ms timer for playing songs
+void init_tim7_songDelay(void)
+{
+  RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
+
+  TIM7->PSC = 240 - 1;
+  TIM7->ARR = 200 - 1;
+
+  TIM7->DIER |= TIM_DIER_UIE;
+  TIM7->CR1  |= TIM_CR1_CEN;
+
+  NVIC_EnableIRQ(TIM7_IRQn);
+}
+
+void TIM7_IRQHandler(void)
+{
+    TIM7->SR &= ~TIM_SR_UIF;
+
+    tim7Ticks++;
 }

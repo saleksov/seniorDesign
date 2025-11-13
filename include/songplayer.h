@@ -7,6 +7,11 @@
 #include "globalvar.h"
 #include "sendmidicode.h"
 
+void init_tim7_songDelay();
 void songPlayer();
+void startSong(void);
+void stopSong(void);
+void pauseSong(void);
+void resumeSong(void);
 
 #endif

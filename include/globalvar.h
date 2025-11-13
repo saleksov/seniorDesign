@@ -33,11 +33,13 @@ extern uint8_t note09;
 extern uint8_t note10;
 extern uint8_t note11;
 
-extern uint8_t octave ;
-extern uint8_t bufferOctave0;
-extern uint8_t bufferOctave1;
-extern uint8_t bufferSettings0;
-extern uint8_t bufferSettings1;
+extern uint8_t octave;
+extern uint8_t octaveStep;
+
+extern uint8_t bufferButton0; // Octave down
+extern uint8_t bufferButton1; // Octave Up
+extern uint8_t bufferButton2; // Clear all notes 
+extern uint8_t bufferButton3; // Enter / Exit Settings
 
 extern uint8_t BPM;
 extern uint8_t Mstatus;
@@ -52,8 +54,11 @@ extern char metros[];
 extern uint8_t modeidx;
 extern uint8_t metroidx;
 
-#define NOPEDAL 0
-#define FLANGER 0
-#define FLANGERDELAY 100000
+// Song Player
+extern volatile uint32_t tim7Ticks;
+extern volatile uint8_t songPlaying;
+extern uint32_t songIndex;
+extern uint32_t next_tick;
+extern uint8_t song_done;
 
 #endif

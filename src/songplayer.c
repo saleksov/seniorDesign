@@ -15,8 +15,84 @@ const unsigned char sweeden [] = {
 0x92,69, 0x93,78, 5,84, 0x90,59, 0x81, 0x82, 0x83, 2,169, 0x91,74, 1,85, 0x91,76, 1,85, 0x90,69, 0x91,73, 0x92,78, 
 5,84, 0x90,67, 0x81, 0x82, 2,170, 0x90,66, 1,85, 0x90,69, 1,85, 0x90,61, 0x91,57, 0x92,64, 10,167, 0x80, 0x81, 
 0x82, 0xF0};
+const unsigned int sweedenLen = 320;
 
-void songPlayer()
+void songPlayer(void)
 {
-    
+    if (!songPlaying || song_done) return;
+
+    while (songIndex < sweedenLen && tim7Ticks >= next_tick)
+    {
+        uint8_t b = sweeden[songIndex++];
+
+        if (b & 0x80)
+        {
+            uint8_t cmd = b & 0xF0;
+
+            switch (cmd)
+            {
+                case 0x90: {  // Note On
+                    uint8_t note = sweeden[songIndex++];
+                    sendMIDI(0x90, note, 100);
+                    break;
+                }
+                case 0x80: {  // Note Off
+                    // aaaa do nothing
+                    break;
+                }
+                case 0xF0:    // End of song
+                    song_done = 1;
+                    songPlaying = 0;
+                    allNotesOff(0); // stop all notes on all channels
+                    return;
+
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            if (songIndex >= sweedenLen) break;
+            uint16_t delay = ((b & 0x7F) << 8) | sweeden[songIndex++];
+            next_tick = tim7Ticks + delay;
+            break;
+        }
+    }
+}
+
+void startSong(void)
+{
+    tim7Ticks = 0;
+    songIndex = 0;
+    next_tick = 0;
+    song_done = 0;
+    songPlaying = 1;
+
+    TIM7->SR &= ~TIM_SR_UIF;
+    TIM7->CR1 |= TIM_CR1_CEN;
+}
+
+void stopSong(void)
+{
+    TIM7->CR1 &= ~TIM_CR1_CEN;
+
+    for (uint8_t ch = 0; ch < 16; ch++) {
+        allNotesOff(ch);
+    }
+
+    songPlaying = 0;
+    song_done = 1;
+}
+
+void pauseSong(void)
+{
+    TIM7->CR1 &= ~TIM_CR1_CEN;
+    songPlaying = 0;
+}
+
+void resumeSong(void)
+{
+    TIM7->SR &= ~TIM_SR_UIF;
+    TIM7->CR1 |= TIM_CR1_CEN;
+    songPlaying = 1;
 }

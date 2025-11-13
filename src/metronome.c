@@ -7,9 +7,6 @@ void init_tim6_metronome(void)
   TIM6->PSC = 48000 - 1;
   TIM6->ARR = (60000 / BPM) - 1;
 
-  //TIM6->PSC = 480 - 1;
-  //TIM6->ARR = 100 - 1;
-
   TIM6->DIER |= TIM_DIER_UIE;
   TIM6->CR1  |= TIM_CR1_CEN;
 
@@ -18,13 +15,8 @@ void init_tim6_metronome(void)
 
 void TIM6_DAC_IRQHandler(void) {
   TIM6->SR &= ~TIM_SR_UIF; // clear interrupt flag
-  
-  TIM6->CNT = 0;              // reset counter
-  TIM6->SR &= ~TIM_SR_UIF;    // clear flag
-  TIM6->CR1 |= TIM_CR1_CEN;   // enable counter
 
-  ms_counter++;
-  //metroSignature();     
+  metroSignature();     
 }
 
 void toggleMetronome(void)

@@ -6,9 +6,10 @@
 #include <stdio.h>
 #include "globalvar.h"
 #include "sendmidicode.h"
+#include "songplayer.h"
 
 void strings(void);
-void buttons_octaves(void);
-void buttons_settings(void);
+void buttons(void);
+void settings(void);
 
 #endif

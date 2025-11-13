@@ -47,18 +47,18 @@ uint8_t note09 = 69;
 uint8_t note10 = 70;
 uint8_t note11 = 71;
 
-uint8_t octave = 3;
-uint8_t bufferOctave0 = 0;
-uint8_t bufferOctave1 = 0;
-uint8_t bufferSettings0 = 0;
-uint8_t bufferSettings1 = 0;
+uint8_t octave = 60;
+uint8_t octaveStep = 12;
+uint8_t bufferButton0 = 0;
+uint8_t bufferButton1 = 0;
+uint8_t bufferButton2 = 0;
+uint8_t bufferButton3 = 0;
 
-uint8_t BPM = 120;
+uint8_t BPM = 60;
 uint8_t Mstatus = 0;
 uint8_t metroSig = 1;
 
 uint8_t metroSigCounter = 0;
-uint8_t Pedal = 1;
 
 // From Justin
 char octaves[7] = {'1','2','3', '4', '5', '6', '7'};
@@ -67,6 +67,13 @@ char metros[4] = {'4', '3', '5', '7'};
 
 uint8_t modeidx = 0;
 uint8_t metroidx = 0;
+
+// Song Player
+volatile uint32_t tim7Ticks = 0;
+volatile uint8_t songPlaying = 0;
+uint32_t songIndex = 0;
+uint32_t next_tick = 0;
+uint8_t song_done = 0;
 
 // From Justin
 void disp_begin();
@@ -79,27 +86,22 @@ void internal_clock(void);
 
 int main(void)
 {
-
   internal_clock();
   inita();
   initc();
   setup_serial();
   init_tim6_metronome();
+  init_tim7_songDelay();
 
   // From Justin
 
-  //init_lcd_spi();
-  //LCD_Setup();
-  //disp_harp();
+  init_lcd_spi();
+  LCD_Setup();
+  disp_harp();
 
-  //toggleMetronome();
+  toggleMetronome();
 
-  //  while (!(USART5->ISR & USART_ISR_TXE))
-  //    ; // Wait until TX buffer empty
-  //  USART5->TDR = 0xC0;
-  //  while (!(USART5->ISR & USART_ISR_TXE))
-  //    ; // Wait until TX buffer empty
-  //  USART5->TDR = 128-1;
+  changeInstrument(0,4);
 
   while (1)
   {
@@ -107,11 +109,9 @@ int main(void)
   
     songPlayer();
     
-  //   //buttons_octaves();
-  //   //if ((GPIOC->IDR) & (1))
-  //   //{
-  //    // buttons_settings();
-  //   //}
+    buttons();
+
+    //settings();
   }
 
   return 0;
