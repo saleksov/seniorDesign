@@ -15,35 +15,45 @@ void init_tim6_metronome(void)
 
 void TIM6_DAC_IRQHandler(void) {
   TIM6->SR &= ~TIM_SR_UIF; // clear interrupt flag
-
-  metroSignature();     
-}
-
-void toggleMetronome(void)
-{
+  
   if (Mstatus)
-  {
-    TIM6->CNT = 0;              // reset counter
-    TIM6->SR &= ~TIM_SR_UIF;    // clear flag
-    TIM6->CR1 |= TIM_CR1_CEN;   // enable counter
-    dispUI(octaves[octave],'Y', modes[modeidx]);
-  }
-  else{
-    TIM6->CR1 &= ~TIM_CR1_CEN;
-    dispUI(octaves[octave],'N', modes[modeidx]);
-  }
+    metroSignature();     
 }
+
+// void toggleMetronome(void)
+// {
+//   if (Mstatus)
+//     Mstatus = 1;
+//   else
+//     Mstatus = 0;
+//   // if (Mstatus)
+//   // {
+//   //   TIM6->CNT = 0;              // reset counter
+//   //   TIM6->SR &= ~TIM_SR_UIF;    // clear flag
+//   //   TIM6->CR1 |= TIM_CR1_CEN;   // enable counter
+//   //   dispUI(octaves[octave],'Y', modes[modeidx]);
+//   // }
+//   // else{
+//   //   TIM6->CR1 &= ~TIM_CR1_CEN;
+//   //   dispUI(octaves[octave],'N', modes[modeidx]);
+//   // }
+// }
 
 void set_bpm(void) {
-    if (Mstatus == 1)
-    {
-      Mstatus = 0;
-      toggleMetronome();
-      TIM6->ARR = (60000 / BPM) - 1;
-      Mstatus = 1;
-      toggleMetronome();
-    }
-      
+  TIM6->CR1 &= ~TIM_CR1_CEN;
+  if (BPM > 0)
+    TIM6->ARR = (60000 / BPM) - 1;
+  else
+  {
+    BPM = 60;
+    TIM6->ARR = (60000 / BPM) - 1;
+    Mstatus = 0;
+  }
+    
+  TIM6->CNT = 0;
+  TIM6->SR &= ~TIM_SR_UIF;
+  TIM6->CR1 |= TIM_CR1_CEN;
+  metroSigCounter = 0;
 }
 
 void metroSignature(void)

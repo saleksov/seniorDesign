@@ -22,18 +22,18 @@
 #include "songplayer.h"
 #include "support.h"
 
-uint8_t bufferString00 = 0;
-uint8_t bufferString01 = 0;
-uint8_t bufferString02 = 0;
-uint8_t bufferString03 = 0;
-uint8_t bufferString04 = 0;
-uint8_t bufferString05 = 0;
-uint8_t bufferString06 = 0;
-uint8_t bufferString07 = 0;
-uint8_t bufferString08 = 0;
-uint8_t bufferString09 = 0;
-uint8_t bufferString10 = 0;
-uint8_t bufferString11 = 0;
+uint8_t bufferString00 = 1;
+uint8_t bufferString01 = 1;
+uint8_t bufferString02 = 1;
+uint8_t bufferString03 = 1;
+uint8_t bufferString04 = 1;
+uint8_t bufferString05 = 1;
+uint8_t bufferString06 = 1;
+uint8_t bufferString07 = 1;
+uint8_t bufferString08 = 1;
+uint8_t bufferString09 = 1;
+uint8_t bufferString10 = 1;
+uint8_t bufferString11 = 1;
 
 uint8_t note00 = 60;
 uint8_t note01 = 61;
@@ -50,10 +50,10 @@ uint8_t note11 = 71;
 
 uint8_t octave = 60;
 uint8_t octaveStep = 12;
-uint8_t bufferButton0 = 0;
-uint8_t bufferButton1 = 0;
-uint8_t bufferButton2 = 0;
-uint8_t bufferButton3 = 0;
+uint8_t bufferButton0 = 1;
+uint8_t bufferButton1 = 1;
+uint8_t bufferButton2 = 1;
+uint8_t bufferButton3 = 1;
 
 uint8_t BPM = 60;
 uint8_t Mstatus = 0;
@@ -103,12 +103,11 @@ int main(void)
   LCD_Setup();
   disp_harp();
 
-  toggleMetronome();
-
   changeInstrument(0,6);
 
   //char temp;
-  startSong();
+  //startSong();
+
   while (1)
   {
     strings();
@@ -117,9 +116,7 @@ int main(void)
     
     buttons();
 
-    //temp = get_keypress();
-    //if (temp == 'A')
-      //debugSendNote();
+    settings();
   }
 
   return 0;

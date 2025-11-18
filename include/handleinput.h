@@ -7,6 +7,7 @@
 #include "globalvar.h"
 #include "sendmidicode.h"
 #include "songplayer.h"
+#include "support.h"
 
 void strings(void);
 void buttons(void);

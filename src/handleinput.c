@@ -1,5 +1,10 @@
 #include "handleinput.h"
 
+static void settingsSongPlayer(void);
+static void settingsMetronome(void);
+static uint8_t getUserNumber(void);
+static void settingsInstrument(void);
+
 void buttons()
 {
   // Octave Down
@@ -42,11 +47,6 @@ void buttons()
   }
 }
 
-// Button3 -> enter settings
-// Button3 -> exit settings from home menu
-// A -> Song Settings
-// B -> Metronome Settigns
-// C -> Instrument Settings
 // D -> Octave Settings
 // * -> confirm
 // # -> go back 
@@ -55,87 +55,163 @@ void buttons()
 
 void settings(void)
 {
-  if ((GPIOC->IDR) & (1<<3))
+  if ((GPIOC->IDR) & (1 << 3))      // Button3 -> enter settings
+    bufferButton3 = 0;
+  else if (bufferButton3 == 0)
   {
+    // In Settings Now
     bufferButton3 = 1;
+
+    char PressedKey = '!';
+
+    PressedKey = get_keypress();
+
+    while(PressedKey != '#')
+    {
+      switch (PressedKey)
+      {
+      case 'A':                   // A -> Song Settings
+        settingsSongPlayer();
+      break;
+
+      
+      case 'B':                   // B -> Metronome Settigns
+        settingsMetronome();
+      break;
+      
+      case 'C':                   // C -> Instrument Settings
+        settingsInstrument();
+      break;
+
+      default:
+        break;
+      }
+      // Check C
+      // Check D
+      // Get another Press
+      PressedKey = get_keypress();
+    }
   }
 }
 
-// A -> Song Settings -> * is Confirm
-// In song settings config
-// A is resume / Start
-// B is pause
-// C is +5 seconds
-// D is Play next song
 // Numbers 0-9 -> song sellect
 // * is confirm, # is back
 
-// B -> Metronome Settigns
-// A -> On
-// B -> Off
-// C -> Signature
-// D-> Set BPM
+static void settingsSongPlayer(void)
+{
+  char PressedKey = '!';
+  PressedKey = get_keypress();
+  while (PressedKey != '#')
+  {
+    switch (PressedKey)
+    {
+    case 'A':             // A is Stop / Start
+      if (songPlaying)
+        stopSong();
+      else
+        startSong();
+    break;
 
-// C -> Instrument Settings
-// A -> change instrument song
-// B -> change instrument strings
+    case 'B':             // B is Resume / Pause
+      if (songPlaying)
+        pauseSong();
+      else
+        resumeSong();
+    break;
 
-// D -> Octave Settings 
-// A -> Set octave step (1-12), incriments all notes by octave step
+    case 'C':             // C is Play Next Song
+        //  Implement play next song
+    break;
+    
+    case 'D':             // D is sellect song 0 - 9;
+        next_tick += 5000;
+    break;
+        // Implement Sellect song 0 -9;
+    default:
+      break;
+    }
+    PressedKey = get_keypress();
+  }
+}
 
-// {
-//   bufferSettings0 = 1;
-//   while ((GPIOC->IDR) & (1))
-//     bufferSettings0 = 1;
+static void settingsMetronome(void)
+{
+  char PressedKey = '!';
+  uint8_t UserNumber = 0;
+  PressedKey = get_keypress();
+  while (PressedKey != '#')
+  {
+    switch (PressedKey)
+    {
+    case 'A':             // A -> ON / OFF
+      if(Mstatus)
+        Mstatus = 0;
+      else
+        Mstatus = 1;
+    break;
 
-//   int loop = 1;
-//   while (loop)
-//   {
-//     if ((GPIOC->IDR) & (1)){
-//       bufferSettings0 = 0;
-//     }
-//     else if (bufferSettings0 == 0)
-//     {
-//       bufferSettings0 = 1;
-//       loop = 0;
-//     }
+    case 'B':             // B -> Set BPM
+      UserNumber = getUserNumber();
+      BPM = UserNumber;
+      set_bpm();
+    break;
 
-//     if ((GPIOC->IDR) & (1 << 2))
-//       bufferOctave0 = 0;
-//     else if (bufferOctave0 == 0)
-//     {
-//       bufferOctave0 = 1;
-//       BPM += 10;
-//       if ((BPM != 0) && (Mstatus == 0))
-//       {
-//         Mstatus = 1;
-//         toggleMetronome();
-//       }
-//       if (BPM > 220)
-//         BPM = 220; 
-//       set_bpm();
-//     }
+    case 'C':             // C -> Metro Signature
+      UserNumber = getUserNumber();
+      if (UserNumber > 4)
+        UserNumber = 4;
+      else if (UserNumber < 1)
+        UserNumber = 1;
+      metroSig = UserNumber;
+      metroSigCounter = 0;
+    break;
 
-//     if ((GPIOC->IDR) & (1 << 3))
-//       bufferOctave1 = 0;
-//     else if (bufferOctave1 == 0)
-//     {
-//       bufferOctave1 = 1;
-//       if (BPM != 0)
-//         BPM -= 10;
-//       if (BPM == 0)
-//       {
-//         Mstatus = 0;
-//         toggleMetronome();
-//       }
-//       set_bpm();
-//     }
-//   }
+    default:
+    break;
+    }
+    PressedKey = get_keypress();
+  }
+}
 
-//   bufferOctave0 = 0;
-//   bufferOctave1 = 0;
-// }
+static void settingsInstrument(void)
+{
+  char PressedKey = '!';
+  uint8_t UserNumber = 0;
+  PressedKey = get_keypress();
+  while (PressedKey != '#')
+  {
+    switch (PressedKey)
+    {
+    case 'A':                       // A -> change instrument song
+    UserNumber = getUserNumber();
+    if (UserNumber > 128)
+      UserNumber = 128;
+    else if (UserNumber < 1)
+      UserNumber = 1;
+    UserNumber--;
+    changeInstrument(0, UserNumber);
+    break;
 
+    // case 'B':                       // B -> change instrument strings
+
+    // break;
+    
+    case 'C':         // C -> Octave Settings Set octave step (1-12), incriments all notes by octave step
+    UserNumber = getUserNumber();
+    if (UserNumber > 12)
+      UserNumber = 12;
+    else if (UserNumber < 1)
+      UserNumber = 1;
+
+    octaveStep = UserNumber;
+    break;
+
+    default:
+      break;
+    }
+    PressedKey = get_keypress();
+  }
+}
 
 void strings(void)
 {
@@ -235,4 +311,28 @@ void strings(void)
     sendMIDI(0, note11, 100);
     bufferString11 = 1;
   }
+}
+
+uint8_t getUserNumber(void)
+{
+  char PressedKey = '!';
+  int userNumber = 0;
+  uint8_t maxDigits = 0;
+  
+  while (PressedKey != '#' && maxDigits < 3)
+  {
+    PressedKey = get_keypress();
+    if (PressedKey >= '0' && PressedKey <= '9')
+    {
+      debugSendNote();
+      userNumber = userNumber * 10 + PressedKey - '0';
+      maxDigits++;
+      if (userNumber == 0)
+        maxDigits--;
+    }
+  }
+
+  if (userNumber > 240)
+    userNumber = 240;
+  return userNumber;
 }

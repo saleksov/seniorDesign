@@ -11,7 +11,6 @@
 void init_tim6_metronome(void);
 void TIM6_DAC_IRQHandler(void);
 void set_bpm(void);
-void toggleMetronome(void);
 void metroSignature(void);
 
 #endif

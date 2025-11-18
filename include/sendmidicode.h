@@ -5,9 +5,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "globalvar.h"
+#include "metronome.h"
 
 void sendMIDI(uint8_t channel, uint8_t note, uint8_t velocity);
-void sendMIDIstrings(uint8_t channel, uint8_t note, uint8_t velocity);
+//void sendMIDIstrings(uint8_t channel, uint8_t note, uint8_t velocity);
 void setOctave(void); 
 
 void changeInstrument(uint8_t channel, uint8_t instrument);
