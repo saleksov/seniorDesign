@@ -103,10 +103,22 @@ int main(void)
   LCD_Setup();
   disp_harp();
 
-  changeInstrument(0,6);
-
   //char temp;
-  //startSong();
+  startSong();
+  changeInstrument(0,4);
+
+// Sweeden      1 -> Index  0
+// DryHands     2 -> Index  321
+// Pokemon      3 -> Index  1117
+// Sweet Cgild  4 -> Index  7738
+// N in Paris   5 -> Index  9221
+// Cat          6 -> Index  9349
+// Mario        7 -> Index  27477
+// Snowman      8 -> Index  31725
+// Mocking Bird 9 -> Index  34565
+// I Wonder     0 -> index  39122
+
+  songIndex = 9221;
 
   while (1)
   {

@@ -64,4 +64,37 @@ extern uint8_t song_done;
 // keypad
 extern uint8_t col;
 
+// Sweeden      1 -> Index  0
+// DryHands     2 -> Index  321
+// Pokemon      3 -> Index  1117
+// Sweet Cgild  4 -> Index  7738
+// N in Paris   5 -> Index  9221
+// Cat          6 -> Index  9349
+// Mario        7 -> Index  27477
+// Snowman      8 -> Index  31725
+// Mocking Bird 9 -> Index  34565
+// I Wonder     0 -> index  39122
+
+#define Sweeden '1'
+#define Dry '2'
+#define Poke '3'
+#define Sweet '4'
+#define Nnn '5'
+#define Cat '6'
+#define Mario '7'
+#define Snowman '8'
+#define Mocking '9'
+#define Wonder '0'
+
+#define SweedenIdx 0
+#define DryIdx 321
+#define PokeIdx 1117
+#define SweetIdx 7738
+#define NnnIdx 9221
+#define CatIdx 9349
+#define MarioIdx 27477
+#define SnowmanIdx 31725
+#define MockingIdx 34565
+#define WonderIdx 39122
+
 #endif
