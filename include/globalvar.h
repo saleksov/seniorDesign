@@ -102,4 +102,8 @@ extern uint8_t metronome_volume;
 #define MockingIdx 34573
 #define WonderIdx 39131
 
+#define STRINGS_CHANNEL 10
+#define METRONOME_CHANNEL 11
+#define SONGPLAYER_CHANNEL 0
+
 #endif

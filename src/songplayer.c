@@ -1597,7 +1597,7 @@ void songPlayer(void)
             case 0x90:
             { // Note On
                 uint8_t note = song[songIndex++];
-                sendMIDI(0x90, note, songPlayer_volume);
+                sendMIDI(SONGPLAYER_CHANNEL, note, songPlayer_volume);
                 break;
             }
             case 0x80:

@@ -4,7 +4,6 @@ static void settingsSongPlayer(void);
 static void settingsMetronome(void);
 static uint8_t getUserNumber(void);
 static void settingsInstrument(void);
-static void settingsVolume(void);
 
 void buttons()
 {
@@ -44,7 +43,9 @@ void buttons()
   else if (bufferButton2 == 0)
   {
     bufferButton2 = 1;
-    allNotesOff(0);
+    allNotesOff(STRINGS_CHANNEL);
+    allNotesOff(SONGPLAYER_CHANNEL);
+    allNotesOff(METRONOME_CHANNEL);
   }
 }
 
@@ -83,9 +84,9 @@ void settings(void)
         settingsInstrument();
       break;
 
-      case 'D':                   // D -> volume settings
-        settingsVolume();
-      break;
+      //case 'D':                   // D -> volume settings
+        //settingsVolume();
+      //break;
 
       default:
         break;
@@ -200,18 +201,66 @@ static void settingsInstrument(void)
   switch (PressedKey)
     {
     case 'A':                       // A -> change instrument song
+    disp_changeInstrument();
+    PressedKey = get_keypress();
+
     UserNumber = getUserNumber();
     if (UserNumber > 128)
       UserNumber = 128;
     else if (UserNumber < 1)
       UserNumber = 1;
     UserNumber--;
-    changeInstrument(0, UserNumber);
+
+    switch (PressedKey)
+    {
+    case 'A':         // A -> Song Player Instrument
+      changeInstrument(SONGPLAYER_CHANNEL, UserNumber);
     break;
 
-    // case 'B':                       // B -> change instrument strings
+    case 'B':         // B -> Metronome Instrument
+      changeInstrument(METRONOME_CHANNEL, UserNumber);
+    break;
 
-    // break;
+    case 'C':         // C -> Strings Instrument
+      changeInstrument(STRINGS_CHANNEL, UserNumber);
+    break;
+    
+    default:
+    break;
+    }
+    break;
+
+    case 'B':                       // B -> Volunme Settings
+
+    disp_changeInstrument();
+    PressedKey = get_keypress();
+
+    UserNumber = getUserNumber();
+    if (UserNumber > 128)
+      UserNumber = 128;
+    else if (UserNumber < 1)
+      UserNumber = 1;
+    UserNumber--;
+
+    switch (PressedKey)
+    {
+    case 'A':
+      songPlayer_volume = UserNumber;
+    break;
+
+    case 'B':
+      metronome_volume = UserNumber;
+    break;
+
+    case 'C':
+      strings_volume = UserNumber;
+    break;
+    
+    default:
+    break;
+    }
+
+    break;
     
     case 'C':         // C -> Octave Settings Set octave step (1-12), incriments all notes by octave step
     UserNumber = getUserNumber();
@@ -226,52 +275,8 @@ static void settingsInstrument(void)
     default:
       break;
     }
-    PressedKey = get_keypress();
   }
-}
-
-static void settingsVolume(void)
-{
-  char PressedKey = '!';
-  uint8_t UserNumber = 0;
-  PressedKey = get_keypress();
-  while (PressedKey != '#')
-  {
-    switch (PressedKey)
-    {
-    case 'A':                       // A -> Set Strings Volume
-    UserNumber = getUserNumber();
-    if (UserNumber > 127)
-      UserNumber = 127;
-    else if (UserNumber < 0)
-      UserNumber = 0;
-    strings_volume = UserNumber;
-    break;
-
-    case 'B':                       // B -> Song Player Volume
-    UserNumber = getUserNumber();
-    if (UserNumber > 127)
-      UserNumber = 127;
-    else if (UserNumber < 0)
-      UserNumber = 0;
-    songPlayer_volume = UserNumber;
-    break;
-
-    case 'C':                       // C -> Metronomee Volume
-    UserNumber = getUserNumber();
-    if (UserNumber > 127)
-      UserNumber = 127;
-    else if (UserNumber < 0)
-      UserNumber = 0;
-    metronome_volume = UserNumber;
-    break;
-
-    default:
-      break;
-    }
-    PressedKey = get_keypress();
-  }
-}
+//}
 
 void strings(void)
 {
@@ -280,7 +285,7 @@ void strings(void)
     bufferString00 = 0;
   else if (bufferString00 == 0)
   {
-    sendMIDI(0, note00, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note00, strings_volume);
     bufferString00 = 1;
   }
 
@@ -288,7 +293,7 @@ void strings(void)
     bufferString01 = 0;
   else if (bufferString01 == 0)
   {
-    sendMIDI(0, note01, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note01, strings_volume);
     bufferString01 = 1;
   }
 
@@ -296,7 +301,7 @@ void strings(void)
     bufferString02 = 0;
   else if (bufferString02 == 0)
   {
-    sendMIDI(0, note02, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note02, strings_volume);
     bufferString02 = 1;
   }
 
@@ -304,7 +309,7 @@ void strings(void)
     bufferString03 = 0;
   else if (bufferString03 == 0)
   {
-    sendMIDI(0, note03, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note03, strings_volume);
     bufferString03 = 1;
   }
 
@@ -312,7 +317,7 @@ void strings(void)
     bufferString04 = 0;
   else if (bufferString04 == 0)
   {
-    sendMIDI(0, note04, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note04, strings_volume);
     bufferString04 = 1;
   }
 
@@ -320,7 +325,7 @@ void strings(void)
     bufferString05 = 0;
   else if (bufferString05 == 0)
   {
-    sendMIDI(0, note05, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note05, strings_volume);
     bufferString05 = 1;
   }
 
@@ -328,7 +333,7 @@ void strings(void)
     bufferString06 = 0;
   else if (bufferString06 == 0)
   {
-    sendMIDI(0, note06, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note06, strings_volume);
     bufferString06 = 1;
   }
 
@@ -336,7 +341,7 @@ void strings(void)
     bufferString07 = 0;
   else if (bufferString07 == 0)
   {
-    sendMIDI(0, note07, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note07, strings_volume);
     bufferString07 = 1;
   }
 
@@ -344,7 +349,7 @@ void strings(void)
     bufferString08 = 0;
   else if (bufferString08 == 0)
   {
-    sendMIDI(0, note08, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note08, strings_volume);
     bufferString08 = 1;
   }
 
@@ -352,7 +357,7 @@ void strings(void)
     bufferString09 = 0;
   else if (bufferString09 == 0)
   {
-    sendMIDI(0, note09, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note09, strings_volume);
     bufferString09 = 1;
   }
 
@@ -360,7 +365,7 @@ void strings(void)
     bufferString10 = 0;
   else if (bufferString10 == 0)
   {
-    sendMIDI(0, note10, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note10, strings_volume);
     bufferString10 = 1;
   }
 
@@ -368,7 +373,7 @@ void strings(void)
     bufferString11 = 0;
   else if (bufferString11 == 0)
   {
-    sendMIDI(0, note11, strings_volume);
+    sendMIDI(STRINGS_CHANNEL, note11, strings_volume);
     bufferString11 = 1;
   }
 }

@@ -62,9 +62,9 @@ void metroSignature(void)
   {
   case 1: // 4/4
     if (metroSigCounter)
-      sendMIDI(0x90, 84, metronome_volume); // Note On 
+      sendMIDI(METRONOME_CHANNEL, 84, metronome_volume); // Note On 
     else
-      sendMIDI(0x90, 72, metronome_volume);
+      sendMIDI(METRONOME_CHANNEL, 72, metronome_volume);
     metroSigCounter++;
     if (metroSigCounter > 3)
       metroSigCounter = 0;
@@ -72,9 +72,9 @@ void metroSignature(void)
   
   case 2: // 3/4
     if (metroSigCounter)
-      sendMIDI(0x90, 84, metronome_volume); // Note On 
+      sendMIDI(METRONOME_CHANNEL, 84, metronome_volume); // Note On 
     else
-      sendMIDI(0x90, 72, metronome_volume);
+      sendMIDI(METRONOME_CHANNEL, 72, metronome_volume);
     metroSigCounter++;
     if (metroSigCounter > 2)
       metroSigCounter = 0;
@@ -82,9 +82,9 @@ void metroSignature(void)
   
   case 3: // 5/4
     if (metroSigCounter)
-      sendMIDI(0x90, 84, metronome_volume); // Note On 
+      sendMIDI(METRONOME_CHANNEL, 84, metronome_volume); // Note On 
     else
-      sendMIDI(0x90, 72, metronome_volume);
+      sendMIDI(METRONOME_CHANNEL, 72, metronome_volume);
     metroSigCounter++;
     if (metroSigCounter > 4)
       metroSigCounter = 0;
@@ -92,9 +92,9 @@ void metroSignature(void)
   
   case 4: // 7/8
     if (metroSigCounter)
-      sendMIDI(0x90, 84, metronome_volume); // Note On 
+      sendMIDI(METRONOME_CHANNEL, 84, metronome_volume); // Note On 
     else
-      sendMIDI(0x90, 72, metronome_volume);
+      sendMIDI(METRONOME_CHANNEL, 72, metronome_volume);
     metroSigCounter++;
     if (metroSigCounter > 6)
       metroSigCounter = 0;

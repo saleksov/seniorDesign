@@ -1,15 +1,7 @@
-// // DO NOT TOUCH vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-// PA13 PA14
-// PC14 PC15
-// In particular, you should not change PA13, PA14, PC14, or PC15 since these
-// are used for an External Oscillator, Debugging, and Programming interfaces.
-// // DO NOT TOUCH ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 #include "stm32f0xx.h"
 #include <stdint.h>
 #include <stdio.h>
 
-// From Justin
 #include <stdio.h>
 #include "fifo.h"
 #include "tty.h"
@@ -21,7 +13,7 @@
 #include "songplayer.h"
 #include "support.h"
 #include "globalvar.h"
-#include "Justin_UI_Commands.h"
+#include "UI_Commands.h"
 
 uint8_t bufferString00 = 1;
 uint8_t bufferString01 = 1;
