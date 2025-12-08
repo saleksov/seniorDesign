@@ -4,6 +4,7 @@ static void settingsSongPlayer(void);
 static void settingsMetronome(void);
 static uint8_t getUserNumber(void);
 static void settingsInstrument(void);
+static void settingsVolume(void);
 
 void buttons()
 {
@@ -64,16 +65,15 @@ void settings(void)
 
     char PressedKey = '!';
 
-    PressedKey = get_keypress();
-
     while(PressedKey != '#')
     {
+      disp_keypad();
+      PressedKey = get_keypress();
       switch (PressedKey)
       {
       case 'A':                   // A -> Song Settings
         settingsSongPlayer();
       break;
-
       
       case 'B':                   // B -> Metronome Settigns
         settingsMetronome();
@@ -83,14 +83,18 @@ void settings(void)
         settingsInstrument();
       break;
 
+      case 'D':                   // D -> volume settings
+        settingsVolume();
+      break;
+
       default:
         break;
       }
       // Check C
       // Check D
       // Get another Press
-      PressedKey = get_keypress();
     }
+    disp_harp_Menu1();
   }
 }
 
@@ -100,9 +104,10 @@ void settings(void)
 static void settingsSongPlayer(void)
 {
   char PressedKey = '!';
-  PressedKey = get_keypress();
-  while (PressedKey != '#')
-  {
+  //while (PressedKey != '#')
+  //{
+    disp_song_Set();
+    PressedKey = get_keypress();
     switch (PressedKey)
     {
     case 'A':             // A is Stop / Start
@@ -120,27 +125,26 @@ static void settingsSongPlayer(void)
     break;
 
     case 'C':             // C is Play Next Song
-        //  Implement play next song
+        skipToNextSong();
     break;
-    
-    case 'D':             // D is sellect song 0 - 9;
-        next_tick += 5000;
-    break;
-        // Implement Sellect song 0 -9;
+        
     default:
-      break;
+
+    if (PressedKey >= '0' && PressedKey <= '9')
+      playsongFromKey(PressedKey);
+    break;
     }
-    PressedKey = get_keypress();
   }
-}
+//}
 
 static void settingsMetronome(void)
 {
   char PressedKey = '!';
   uint8_t UserNumber = 0;
-  PressedKey = get_keypress();
-  while (PressedKey != '#')
-  {
+  //while (PressedKey != '#')
+  //{
+    disp_metronome_Set();
+    PressedKey = get_keypress();
     switch (PressedKey)
     {
     case 'A':             // A -> ON / OFF
@@ -157,19 +161,31 @@ static void settingsMetronome(void)
     break;
 
     case 'C':             // C -> Metro Signature
-      UserNumber = getUserNumber();
-      if (UserNumber > 4)
-        UserNumber = 4;
-      else if (UserNumber < 1)
-        UserNumber = 1;
-      metroSig = UserNumber;
-      metroSigCounter = 0;
+      disp_signature_Set();
+      PressedKey = get_keypress();
+      switch (PressedKey)
+      {
+      case 'A':
+        metroSig = 1; // 4/4
+      break;
+      case 'B':
+        metroSig = 2; // 3/4
+      break;
+      case 'C':
+        metroSig = 3; // 5/4
+      break;
+      case 'D':
+        metroSig = 4; // 7/8
+      break;
+
+      default:
+      break;
+      }
     break;
 
     default:
     break;
-    }
-    PressedKey = get_keypress();
+    //}
   }
 }
 
@@ -177,10 +193,11 @@ static void settingsInstrument(void)
 {
   char PressedKey = '!';
   uint8_t UserNumber = 0;
+  //while (PressedKey != '#')
+  //{
+  disp_instrument_Set();
   PressedKey = get_keypress();
-  while (PressedKey != '#')
-  {
-    switch (PressedKey)
+  switch (PressedKey)
     {
     case 'A':                       // A -> change instrument song
     UserNumber = getUserNumber();
@@ -213,6 +230,49 @@ static void settingsInstrument(void)
   }
 }
 
+static void settingsVolume(void)
+{
+  char PressedKey = '!';
+  uint8_t UserNumber = 0;
+  PressedKey = get_keypress();
+  while (PressedKey != '#')
+  {
+    switch (PressedKey)
+    {
+    case 'A':                       // A -> Set Strings Volume
+    UserNumber = getUserNumber();
+    if (UserNumber > 127)
+      UserNumber = 127;
+    else if (UserNumber < 0)
+      UserNumber = 0;
+    strings_volume = UserNumber;
+    break;
+
+    case 'B':                       // B -> Song Player Volume
+    UserNumber = getUserNumber();
+    if (UserNumber > 127)
+      UserNumber = 127;
+    else if (UserNumber < 0)
+      UserNumber = 0;
+    songPlayer_volume = UserNumber;
+    break;
+
+    case 'C':                       // C -> Metronomee Volume
+    UserNumber = getUserNumber();
+    if (UserNumber > 127)
+      UserNumber = 127;
+    else if (UserNumber < 0)
+      UserNumber = 0;
+    metronome_volume = UserNumber;
+    break;
+
+    default:
+      break;
+    }
+    PressedKey = get_keypress();
+  }
+}
+
 void strings(void)
 {
   // String 0 - Output is B11
@@ -220,7 +280,7 @@ void strings(void)
     bufferString00 = 0;
   else if (bufferString00 == 0)
   {
-    sendMIDI(0, note00, 100);
+    sendMIDI(0, note00, strings_volume);
     bufferString00 = 1;
   }
 
@@ -228,7 +288,7 @@ void strings(void)
     bufferString01 = 0;
   else if (bufferString01 == 0)
   {
-    sendMIDI(0, note01, 100);
+    sendMIDI(0, note01, strings_volume);
     bufferString01 = 1;
   }
 
@@ -236,7 +296,7 @@ void strings(void)
     bufferString02 = 0;
   else if (bufferString02 == 0)
   {
-    sendMIDI(0, note02, 100);
+    sendMIDI(0, note02, strings_volume);
     bufferString02 = 1;
   }
 
@@ -244,7 +304,7 @@ void strings(void)
     bufferString03 = 0;
   else if (bufferString03 == 0)
   {
-    sendMIDI(0, note03, 100);
+    sendMIDI(0, note03, strings_volume);
     bufferString03 = 1;
   }
 
@@ -252,7 +312,7 @@ void strings(void)
     bufferString04 = 0;
   else if (bufferString04 == 0)
   {
-    sendMIDI(0, note04, 100);
+    sendMIDI(0, note04, strings_volume);
     bufferString04 = 1;
   }
 
@@ -260,7 +320,7 @@ void strings(void)
     bufferString05 = 0;
   else if (bufferString05 == 0)
   {
-    sendMIDI(0, note05, 100);
+    sendMIDI(0, note05, strings_volume);
     bufferString05 = 1;
   }
 
@@ -268,7 +328,7 @@ void strings(void)
     bufferString06 = 0;
   else if (bufferString06 == 0)
   {
-    sendMIDI(0, note06, 100);
+    sendMIDI(0, note06, strings_volume);
     bufferString06 = 1;
   }
 
@@ -276,7 +336,7 @@ void strings(void)
     bufferString07 = 0;
   else if (bufferString07 == 0)
   {
-    sendMIDI(0, note07, 100);
+    sendMIDI(0, note07, strings_volume);
     bufferString07 = 1;
   }
 
@@ -284,7 +344,7 @@ void strings(void)
     bufferString08 = 0;
   else if (bufferString08 == 0)
   {
-    sendMIDI(0, note08, 100);
+    sendMIDI(0, note08, strings_volume);
     bufferString08 = 1;
   }
 
@@ -292,7 +352,7 @@ void strings(void)
     bufferString09 = 0;
   else if (bufferString09 == 0)
   {
-    sendMIDI(0, note09, 100);
+    sendMIDI(0, note09, strings_volume);
     bufferString09 = 1;
   }
 
@@ -300,7 +360,7 @@ void strings(void)
     bufferString10 = 0;
   else if (bufferString10 == 0)
   {
-    sendMIDI(0, note10, 100);
+    sendMIDI(0, note10, strings_volume);
     bufferString10 = 1;
   }
 
@@ -308,7 +368,7 @@ void strings(void)
     bufferString11 = 0;
   else if (bufferString11 == 0)
   {
-    sendMIDI(0, note11, 100);
+    sendMIDI(0, note11, strings_volume);
     bufferString11 = 1;
   }
 }
@@ -319,16 +379,18 @@ uint8_t getUserNumber(void)
   int userNumber = 0;
   uint8_t maxDigits = 0;
   
+  disp_enterNumber();
   while (PressedKey != '#' && maxDigits < 3)
   {
     PressedKey = get_keypress();
     if (PressedKey >= '0' && PressedKey <= '9')
     {
-      debugSendNote();
       userNumber = userNumber * 10 + PressedKey - '0';
       maxDigits++;
       if (userNumber == 0)
         maxDigits--;
+      else
+        disp_number(userNumber % 10, maxDigits);
     }
   }
 

@@ -13,5 +13,8 @@ void startSong(void);
 void stopSong(void);
 void pauseSong(void);
 void resumeSong(void);
+void playsongFromKey(char c);
+void skipToNextSong(void);
+uint32_t getSongIndexFromChar(char c);
 
 #endif

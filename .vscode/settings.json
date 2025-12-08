@@ -3,6 +3,8 @@
         "stm32f0xx.h": "c",
         "handleinput.h": "c",
         "justin_ui_commands": "c",
-        "sendmidicode.h": "c"
+        "sendmidicode.h": "c",
+        "metronome.h": "c",
+        "justin_ui_commands.h": "c"
     }
 }

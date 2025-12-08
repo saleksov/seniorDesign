@@ -60,21 +60,17 @@ extern volatile uint8_t songPlaying;
 extern uint32_t songIndex;
 extern uint32_t next_tick;
 extern uint8_t song_done;
+extern volatile uint8_t currentSong;
 
 // keypad
 extern uint8_t col;
 
-// Sweeden      1 -> Index  0
-// DryHands     2 -> Index  321
-// Pokemon      3 -> Index  1117
-// Sweet Cgild  4 -> Index  7738
-// N in Paris   5 -> Index  9221
-// Cat          6 -> Index  9349
-// Mario        7 -> Index  27477
-// Snowman      8 -> Index  31725
-// Mocking Bird 9 -> Index  34565
-// I Wonder     0 -> index  39122
+// Volume
 
+extern uint8_t strings_volume;
+extern uint8_t songPlayer_volume;
+extern uint8_t metronome_volume;
+ 
 #define Sweeden '1'
 #define Dry '2'
 #define Poke '3'
@@ -85,16 +81,25 @@ extern uint8_t col;
 #define Snowman '8'
 #define Mocking '9'
 #define Wonder '0'
-
+// Sweeden      1 -> Index  0
+// DryHands     2 -> Index  322
+// Pokemon      3 -> Index  1119
+// Sweet Cgild  4 -> Index  7741
+// N in Paris   5 -> Index  9225
+// Cat          6 -> Index  9354  
+// Mario        7 -> Index  27483
+// Snowman      8 -> Index  31732 
+// Mocking Bird 9 -> Index  34573 
+// I Wonder     0 -> index  39131
 #define SweedenIdx 0
-#define DryIdx 321
-#define PokeIdx 1117
-#define SweetIdx 7738
-#define NnnIdx 9221
-#define CatIdx 9349
-#define MarioIdx 27477
-#define SnowmanIdx 31725
-#define MockingIdx 34565
-#define WonderIdx 39122
+#define DryIdx 322
+#define PokeIdx 1119
+#define SweetIdx 7741
+#define NnnIdx 9225
+#define CatIdx 9354
+#define MarioIdx 27483
+#define SnowmanIdx 31732
+#define MockingIdx 34573
+#define WonderIdx 39131
 
 #endif

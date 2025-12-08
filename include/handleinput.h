@@ -8,6 +8,7 @@
 #include "sendmidicode.h"
 #include "songplayer.h"
 #include "support.h"
+#include "Justin_UI_Commands.h"
 
 void strings(void);
 void buttons(void);

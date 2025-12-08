@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include "fifo.h"
 #include "tty.h"
-#include "commands.h"
 #include "lcd.h"
 #include "sendmidicode.h"
 #include "handleinput.h"
@@ -21,6 +20,8 @@
 #include "initpins.h"
 #include "songplayer.h"
 #include "support.h"
+#include "globalvar.h"
+#include "Justin_UI_Commands.h"
 
 uint8_t bufferString00 = 1;
 uint8_t bufferString01 = 1;
@@ -76,14 +77,22 @@ uint32_t songIndex = 0;
 uint32_t next_tick = 0;
 uint8_t song_done = 0;
 
+volatile uint8_t currentSong = Sweeden;
+
 uint8_t col;
+
+// Volume
+
+uint8_t strings_volume = 100;
+uint8_t songPlayer_volume = 100;
+uint8_t metronome_volume = 100;
 
 // From Justin
 void disp_begin();
-void disp_harp();
+void disp_harp_Menu1();
 void init_clear();
 void init_lcd_spi();
-void dispUI(char octave, char metro, char mode);
+//void dispUI(char octave, char metro, char mode);
 
 void internal_clock(void);
 
@@ -101,31 +110,38 @@ int main(void)
 
   init_lcd_spi();
   LCD_Setup();
-  disp_harp();
+  disp_harp_Menu1();
 
   //char temp;
-  startSong();
+  
   changeInstrument(0,4);
 
 // Sweeden      1 -> Index  0
-// DryHands     2 -> Index  321
-// Pokemon      3 -> Index  1117
-// Sweet Cgild  4 -> Index  7738
-// N in Paris   5 -> Index  9221
-// Cat          6 -> Index  9349
-// Mario        7 -> Index  27477
-// Snowman      8 -> Index  31725
-// Mocking Bird 9 -> Index  34565
-// I Wonder     0 -> index  39122
+// DryHands     2 -> Index  322
+// Pokemon      3 -> Index  1119
+// Sweet Cgild  4 -> Index  7741
+// N in Paris   5 -> Index  9225
+// Cat          6 -> Index  9354  
+// Mario        7 -> Index  27483
+// Snowman      8 -> Index  31732 
+// Mocking Bird 9 -> Index  34573 
+// I Wonder     0 -> index  39131
+  
+  currentSong = '0';
+  //startSong();
 
-  songIndex = 9221;
+  // get_keypress();
+  // sendMIDI(0,60,100); // Note Off test
+  // while (!(USART5->ISR & USART_ISR_TXE))
+  //   ; // Wait until TX buffer empty
+  // USART5->TDR = 0x90 | (0 & 0x0F);
 
   while (1)
-  {
+  {                                                                       
     strings();
   
     songPlayer();
-    
+  
     buttons();
 
     settings();

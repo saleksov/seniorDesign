@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "sendmidicode.h"
 #include "globalvar.h"
-#include "commands.h"
 
 void init_tim6_metronome(void);
 void TIM6_DAC_IRQHandler(void);
