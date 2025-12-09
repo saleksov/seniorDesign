@@ -29,6 +29,7 @@ void disp_enterNumber();
 void disp_number(uint8_t number, uint8_t idx);
 void disp_instrument_Set();
 void disp_changeInstrument();
+void disp_changeVolume();
 
 //void clear_harp_Menu1();
 

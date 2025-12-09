@@ -69,7 +69,10 @@ void settings(void)
     while(PressedKey != '#')
     {
       disp_keypad();
-      PressedKey = get_keypress();
+      PressedKey = '!';
+      while (PressedKey != 'A' && PressedKey != 'B' && PressedKey != 'C' && PressedKey != '#')
+        PressedKey = get_keypress();
+
       switch (PressedKey)
       {
       case 'A':                   // A -> Song Settings
@@ -84,16 +87,9 @@ void settings(void)
         settingsInstrument();
       break;
 
-      //case 'D':                   // D -> volume settings
-        //settingsVolume();
-      //break;
-
       default:
-        break;
+      break;
       }
-      // Check C
-      // Check D
-      // Get another Press
     }
     disp_harp_Menu1();
   }
@@ -142,10 +138,16 @@ static void settingsMetronome(void)
 {
   char PressedKey = '!';
   uint8_t UserNumber = 0;
-  //while (PressedKey != '#')
-  //{
+  while (PressedKey != '#')
+  {
     disp_metronome_Set();
-    PressedKey = get_keypress();
+
+    PressedKey = '!';
+    while (PressedKey != 'A' && PressedKey != 'B' && PressedKey != 'C' && PressedKey != '#')
+    {
+      PressedKey = get_keypress();
+    }
+    
     switch (PressedKey)
     {
     case 'A':             // A -> ON / OFF
@@ -186,7 +188,7 @@ static void settingsMetronome(void)
 
     default:
     break;
-    //}
+    }
   }
 }
 
@@ -194,89 +196,122 @@ static void settingsInstrument(void)
 {
   char PressedKey = '!';
   uint8_t UserNumber = 0;
-  //while (PressedKey != '#')
-  //{
-  disp_instrument_Set();
-  PressedKey = get_keypress();
-  switch (PressedKey)
-    {
-    case 'A':                       // A -> change instrument song
-    disp_changeInstrument();
-    PressedKey = get_keypress();
+  while (PressedKey != '#')
+  {
+    disp_instrument_Set();
+    
+    PressedKey = '!';
+    while (PressedKey != 'A' && PressedKey != 'B' && PressedKey != 'C' && PressedKey != '#')
+      PressedKey = get_keypress();
 
-    UserNumber = getUserNumber();
-    if (UserNumber > 128)
-      UserNumber = 128;
-    else if (UserNumber < 1)
-      UserNumber = 1;
-    UserNumber--;
+    // ///////////////////////////////////////////////////////////////////////////////
 
     switch (PressedKey)
     {
-    case 'A':         // A -> Song Player Instrument
-      changeInstrument(SONGPLAYER_CHANNEL, UserNumber);
-    break;
 
-    case 'B':         // B -> Metronome Instrument
-      changeInstrument(METRONOME_CHANNEL, UserNumber);
-    break;
+    case 'A': // C -> Octave Settings Set octave step (1-12), incriments all notes by octave step
+      UserNumber = getUserNumber();
+      if (UserNumber > 12)
+        UserNumber = 12;
+      else if (UserNumber < 1)
+        UserNumber = 1;
 
-    case 'C':         // C -> Strings Instrument
-      changeInstrument(STRINGS_CHANNEL, UserNumber);
-    break;
+      octaveStep = UserNumber;
+      break;
+
+      // /////////////////////////////////////////////////////////////////////////
+
+    case 'B': // B -> Volunme Settings
     
-    default:
-    break;
-    }
-    break;
-
-    case 'B':                       // B -> Volunme Settings
-
-    disp_changeInstrument();
-    PressedKey = get_keypress();
-
-    UserNumber = getUserNumber();
-    if (UserNumber > 128)
-      UserNumber = 128;
-    else if (UserNumber < 1)
-      UserNumber = 1;
-    UserNumber--;
-
-    switch (PressedKey)
+    PressedKey = '!';
+    while (PressedKey != '#')
     {
-    case 'A':
-      songPlayer_volume = UserNumber;
-    break;
+      disp_changeVolume();
+      PressedKey = '!';
+      PressedKey = get_keypress();
 
-    case 'B':
-      metronome_volume = UserNumber;
-    break;
+      while (PressedKey != 'A' && PressedKey != 'B' && PressedKey != 'C' && PressedKey != '#')
+        PressedKey = get_keypress();
 
-    case 'C':
-      strings_volume = UserNumber;
-    break;
+      if(PressedKey == '#')
+        break;
+
+      UserNumber = getUserNumber();
+      if (UserNumber > 128)
+        UserNumber = 128;
+      else if (UserNumber < 1)
+        UserNumber = 1;
+      UserNumber--;
+
+      switch (PressedKey)
+      {
+      case 'A':
+        songPlayer_volume = UserNumber;
+        break;
+
+      case 'B':
+        metronome_volume = UserNumber;
+        break;
+
+      case 'C':
+        strings_volume = UserNumber;
+        break;
+      }
+      }
+      PressedKey = '!';
+      break;
     
-    default:
-    break;
-    }
+      // /////////////////////////////////////////////////////////////////////////
 
-    break;
+    case 'C': // C -> change instrument
     
-    case 'C':         // C -> Octave Settings Set octave step (1-12), incriments all notes by octave step
-    UserNumber = getUserNumber();
-    if (UserNumber > 12)
-      UserNumber = 12;
-    else if (UserNumber < 1)
-      UserNumber = 1;
+    PressedKey = '!';
+    while (PressedKey != '#')
+    {
+      disp_changeInstrument();
+      PressedKey = '!';
+      PressedKey = get_keypress();
 
-    octaveStep = UserNumber;
-    break;
+      while (PressedKey != 'A' && PressedKey != 'B' && PressedKey != 'C' && PressedKey != '#')
+        PressedKey = get_keypress();
+
+      if(PressedKey == '#')
+        break;
+
+      UserNumber = getUserNumber();
+      if (UserNumber > 128)
+        UserNumber = 128;
+      else if (UserNumber < 1)
+        UserNumber = 1;
+      UserNumber--;
+
+      switch (PressedKey)
+      {
+      case 'A': // A -> Song Player Instrument
+        changeInstrument(SONGPLAYER_CHANNEL, UserNumber);
+        break;
+
+      case 'B': // B -> Metronome Instrument
+        changeInstrument(METRONOME_CHANNEL, UserNumber);
+        break;
+
+      case 'C': // C -> Strings Instrument
+        changeInstrument(STRINGS_CHANNEL, UserNumber);
+        break;
+
+      default:
+        break;
+      }
+      }
+      PressedKey = '!';
+      break;
+      // /////////////////////////////////////////////////////////////////////////
 
     default:
       break;
     }
   }
-//}
+}
 
 void strings(void)
 {

@@ -59,3 +59,17 @@ void setOctave(void)
   note10 = octave + 10;
   note11 = octave + 11;
 }
+
+void playGoodNote()
+{
+  sendMIDI(DEBUG_CHANNEL, 60, metronome_volume);
+  sendMIDI(DEBUG_CHANNEL, 64, metronome_volume);
+  sendMIDI(DEBUG_CHANNEL, 67, metronome_volume);
+}
+
+void playBadNote()
+{
+  sendMIDI(DEBUG_CHANNEL, 60, metronome_volume);
+  sendMIDI(DEBUG_CHANNEL, 63, metronome_volume);
+  sendMIDI(DEBUG_CHANNEL, 67, metronome_volume);
+}

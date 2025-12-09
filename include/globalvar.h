@@ -105,5 +105,6 @@ extern uint8_t metronome_volume;
 #define STRINGS_CHANNEL 10
 #define METRONOME_CHANNEL 11
 #define SONGPLAYER_CHANNEL 0
+#define DEBUG_CHANNEL 9
 
 #endif

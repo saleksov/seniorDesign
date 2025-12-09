@@ -14,5 +14,7 @@ void setOctave(void);
 void changeInstrument(uint8_t channel, uint8_t instrument);
 void allNotesOff(uint8_t channel);
 void debugSendNote(void);
+void playGoodNote();
+void playBadNote();
 
 #endif

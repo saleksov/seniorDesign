@@ -76,7 +76,7 @@ uint8_t col;
 // Volume
 
 uint8_t strings_volume = 100;
-uint8_t songPlayer_volume = 100;
+uint8_t songPlayer_volume = 50;
 uint8_t metronome_volume = 100;
 
 // From Justin
@@ -120,7 +120,7 @@ int main(void)
 // I Wonder     0 -> index  39131
   
   currentSong = '0';
-  //startSong();
+  startSong();
 
   // get_keypress();
   // sendMIDI(0,60,100); // Note Off test

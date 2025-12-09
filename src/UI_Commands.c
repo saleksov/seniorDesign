@@ -306,13 +306,33 @@ uint8_t PBsettingsWord[] = {'P', 'B', ' ','4', ' ', 'S', 'E', 'T', 'T', 'I', 'N'
 uint16_t row[] = {10, 50, 90, 130, 170, 210, 250, 310};
 uint16_t col[] = {260, 240, 220, 200, 180, 160, 140, 120, 100, 80, 60, 40, 20};
 
+uint8_t SettingsWord[] =    {'S', 'E', 'T', 'T', 'I', 'N', 'G', 'S'};
+uint8_t SongPlayerWord[] =  {'M', 'P', '3', ' ', 'P', 'L', 'A', 'Y', 'E', 'R', ' ', 'A'}; 
+uint8_t MetronomeWord[] =   {'M', 'E', 'T', 'R', 'O', 'N', 'O', 'M', 'E', ' ', ' ', 'B'};
+uint8_t InstrumentWord[] =  {'I', 'N', 'S', 'T', 'R', 'U', 'M', 'E', 'N', 'T', ' ', 'C'};
+uint8_t GoBackWord[] =      {'G', 'O', ' ', 'B', 'A', 'C', 'K', ' ', ' ', ' ', ' ', '#'};
+uint8_t StartStopWord[] =   {'S', 'T', 'A', 'R', 'T', '/', 'S', 'T', 'O', 'P', ' ', 'A'};
+uint8_t PauseResumeWord[] = {'P', 'A', 'U', 'S', 'E', '/', 'P', 'L', 'A', 'Y', ' ', 'B'};
+uint8_t skipsongWord[] =    {'S', 'K', 'I', 'P', ' ', 'S', 'O', 'N', 'G', ' ', ' ', 'C'};
+uint8_t SelSongNumWord[] =  {'S', 'E', 'L', 'E', 'C', 'T', ' ', 'S', 'O', 'N', 'G'};
+uint8_t Nums09Word[] =      {'W', 'I', 'T', 'H', ' ', 'N', 'U', 'M', 'S', ' ', '0', '-', '9'};
+uint8_t SetBPMWord[] =      {'S', 'E', 'T', ' ', 'B', 'P', 'M', ' ', ' ', ' ', ' ', 'B'};
+uint8_t SignatureWord[] =   {'S', 'I', 'G', 'N', 'A', 'T', 'U', 'R', 'E', ' ', ' ', 'C'};
+uint8_t Word44[] =          {'4', '/', '4', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A'};
+uint8_t Word34[] =          {'3', '/', '4', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'B'};
+uint8_t Word54[] =          {'5', '/', '4', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C'};
+uint8_t Word78[] =          {'7', '/', '8', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D'};
+uint8_t EnterNumber[] =     {'E', 'N', 'T', 'E', 'R', ' ', 'N', 'U', 'M', 'B', 'E', 'R', ':'};
+uint8_t confirmWord[] =     {'C', 'O', 'N', 'F', 'I', 'R', 'M', ' ', ' ', ' ', ' ', '#'};
+uint8_t OctaveInc [] =      {'O', 'C', 'T', 'A', 'V', 'E', ' ', 'I', 'N', 'C', ' ', 'A'};
+uint8_t VolumeWord[] =      {'V', 'O', 'L', 'U', 'M', 'E', ' ', ' ', ' ', ' ', ' ', 'B'};
+uint8_t ConfigWord[] =      {'C', 'O', 'N', 'F', 'I', 'G', 'U', 'R', 'E', ' ', ' ', 'C'};
+uint8_t StringsWord[] =     {'S', 'T', 'R', 'I', 'N', 'G', 'S', ' ', ' ', ' ', ' ', 'C'};
+
+
 void disp_harp_Menu1(){
 
     LCD_Clear(0000, 0, 0, 0, 0);
-
-    // for (int i = 0; i < 5; i++){
-    //     LCD_DrawChar(col[i+3], row[0], 0xFFFF, 0xFFFF, Team8Word[i], 16, 2);
-    // }
 
     for (int i = 0; i < 10; i++){
         LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, StringlessWord[i], 16, 2);
@@ -331,15 +351,13 @@ void disp_harp_Menu1(){
     }
 }
 
-uint8_t SongPlayerWord[] =  {'M', 'P', '3', ' ', 'P', 'L', 'A', 'Y', 'E', 'R', ' ', 'A'}; 
-uint8_t MetronomeWord[] =   {'M', 'E', 'T', 'R', 'O', 'N', 'O', 'M', 'E', ' ', ' ', 'B'};
-uint8_t InstrumentWord[] =  {'I', 'N', 'S', 'T', 'R', 'U', 'M', 'E', 'N', 'T', ' ', 'C'};
-//uint8_t VolumeWord[] =      {'V', 'O', 'L', 'U', 'M', 'E', ' ', ' ', ' ', ' ', ' ', 'D'};
-uint8_t GoBackWord[] =      {'G', 'O', ' ', 'B', 'A', 'C', 'K', ' ', ' ', ' ', ' ', '#'};
-
 void disp_keypad(){
 
     LCD_Clear(0000, 0, 0, 0, 0);
+
+    for (int i = 0; i < 8; i++){
+        LCD_DrawChar(col[i], row[0], 0xFFFF, 0xFFFF, SettingsWord[i], 16, 2);
+    }
 
     for (int i = 0; i < 12; i++){
         LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, SongPlayerWord[i], 16, 2);
@@ -350,27 +368,21 @@ void disp_keypad(){
     }
 
     for (int i = 0; i < 12; i++){
-        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, InstrumentWord[i], 16, 2);
+        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, ConfigWord[i], 16, 2);
     }
-
-    // for (int i = 0; i < 12; i++){
-    //     LCD_DrawChar(col[i], row[4], 0xFFFF, 0xFFFF, VolumeWord[i], 16, 2);
-    // }
 
     for (int i = 0; i < 12; i++){
         LCD_DrawChar(col[i], row[5], 0xFFFF, 0xFFFF, GoBackWord[i], 16, 2);
     }
 }
 
-uint8_t StartStopWord[] =   {'S', 'T', 'A', 'R', 'T', '/', 'S', 'T', 'O', 'P', ' ', 'A'};
-uint8_t PauseResumeWord[] = {'P', 'A', 'U', 'S', 'E', '/', 'P', 'L', 'A', 'Y', ' ', 'B'};
-uint8_t skipsongWord[] =    {'S', 'K', 'I', 'P', ' ', 'S', 'O', 'N', 'G', ' ', ' ', 'C'};
-uint8_t SellectSongWithNumWord[] = {'S', 'E', 'L', 'E', 'C', 'T', ' ', 'S', 'O', 'N', 'G'};
-uint8_t Nums09Word[] =      {'W', 'I', 'T', 'H', ' ', 'N', 'U', 'M', 'S', ' ', '0', '-', '9'};
-
 void disp_song_Set()
 {
     LCD_Clear(0000, 0, 0, 0, 0);
+
+    for (int i = 0; i < 10; i++){
+        LCD_DrawChar(col[i], row[0], 0xFFFF, 0xFFFF, SongPlayerWord[i], 16, 2);
+    }
 
     for (int i = 0; i < 12; i++){
         LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, StartStopWord[i], 16, 2);
@@ -385,7 +397,7 @@ void disp_song_Set()
     }
 
     for (int i = 0; i < 11; i++){
-        LCD_DrawChar(col[i], row[4], 0xFFFF, 0xFFFF, SellectSongWithNumWord[i], 16, 2);
+        LCD_DrawChar(col[i], row[4], 0xFFFF, 0xFFFF, SelSongNumWord[i], 16, 2);
     }
 
     for (int i = 0; i < 13; i++){
@@ -393,12 +405,13 @@ void disp_song_Set()
     }
 }
 
-uint8_t SetBPMWord[] =      {'S', 'E', 'T', ' ', 'B', 'P', 'M', ' ', ' ', ' ', ' ', 'B'};
-uint8_t SignatureWord[] =   {'S', 'I', 'G', 'N', 'A', 'T', 'U', 'R', 'E', ' ', ' ', 'C'};
-
 void disp_metronome_Set()
 {
     LCD_Clear(0000, 0, 0, 0, 0);
+
+    for (int i = 0; i < 9; i++){
+        LCD_DrawChar(col[i], row[0], 0xFFFF, 0xFFFF, MetronomeWord[i], 16, 2);
+    }
 
     for (int i = 0; i < 12; i++){
         LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, StartStopWord[i], 16, 2);
@@ -411,13 +424,12 @@ void disp_metronome_Set()
     for (int i = 0; i < 12; i++){
         LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, SignatureWord[i], 16, 2);
     }
+
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[5], 0xFFFF, 0xFFFF, GoBackWord[i], 16, 2);
+    }
     // Add code to display metronome settings
 }
-
-uint8_t Word44[] = {'4', '/', '4', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'A'};
-uint8_t Word34[] = {'3', '/', '4', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'B'};
-uint8_t Word54[] = {'5', '/', '4', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'C'};
-uint8_t Word78[] = {'7', '/', '8', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'D'};
 
 void disp_signature_Set()
 {
@@ -440,9 +452,6 @@ void disp_signature_Set()
     }
 }
 
-uint8_t EnterNumber[] = {'E', 'N', 'T', 'E', 'R', ' ', 'N', 'U', 'M', 'B', 'E', 'R', ':'};
-uint8_t confirmWord[] = {'C', 'O', 'N', 'F', 'I', 'R', 'M', ' ', ' ', ' ', ' ', '#'};
-
 void disp_enterNumber()
 {
     LCD_Clear(0000, 0, 0, 0, 0);
@@ -459,46 +468,80 @@ void disp_enterNumber()
 void disp_number(uint8_t number, uint8_t idx)
 {
     char numChar = number + '0'; // Convert to character
-    LCD_DrawChar(col[idx+3], row[3], 0xFFFF, 0xFFFF, numChar, 16, 2);
+    LCD_DrawChar(col[idx+4], row[3], 0xFFFF, 0xFFFF, numChar, 16, 2);
 }
-
-uint8_t InstrumentWord[] =  {'I', 'N', 'S', 'T', 'R', 'U', 'M', 'E', 'N', 'T', ' ', 'A'};
-uint8_t VolumeWord[] =      {'V', 'O', 'L', 'U', 'M', 'E', ' ', ' ', ' ', ' ', ' ', 'B'};
-uint8_t OctaveInc [] =      {'O', 'C', 'T', 'A', 'V', 'E', ' ', 'I', 'N', 'C', ' ', 'C'};
 
 void disp_instrument_Set()
 {
     LCD_Clear(0000, 0, 0, 0, 0);
 
-    for (int i = 0; i < 12; i++){
-        LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, InstrumentWord[i], 16, 2);
+    for (int i = 0; i < 9; i++){
+        LCD_DrawChar(col[i], row[0], 0xFFFF, 0xFFFF, ConfigWord[i], 16, 2);
     }
 
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, OctaveInc[i], 16, 2);
+    }
+    
     for (int i = 0; i < 12; i++){
         LCD_DrawChar(col[i], row[2], 0xFFFF, 0xFFFF, VolumeWord[i], 16, 2);
     }
 
     for (int i = 0; i < 12; i++){
-        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, OctaveInc[i], 16, 2);
+        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, InstrumentWord[i], 16, 2);
+    }
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[5], 0xFFFF, 0xFFFF, GoBackWord[i], 16, 2);
     }
 }
-
-uint8_t StringsWord[] =      {'S', 'T', 'R', 'I', 'N', 'G', 'S', ' ', ' ', ' ', ' ', 'C'};
 
 void disp_changeInstrument()
 {
     LCD_Clear(0000, 0, 0, 0, 0);
 
-    for (int i = 0; i < 12; i++){
-        LCD_DrawChar(col[i], row[1], 0xFFFF, 0xFFFF, SongPlayerWord[i], 16, 2);
-    }
-    
-    for (int i = 0; i < 12; i++){
-        LCD_DrawChar(col[i], row[2], 0xFFFF, 0xFFFF, MetronomeWord[i], 16, 2);
+    for (int i = 0; i < 10; i++){
+        LCD_DrawChar(col[i], row[0], 0xFFFF, 0xFFFF, InstrumentWord[i], 16, 2);
     }
 
     for (int i = 0; i < 12; i++){
-        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, StringsWord[i], 16, 2);
+        LCD_DrawChar(col[i], row[2], 0xFFFF, 0xFFFF, SongPlayerWord[i], 16, 2);
+    }
+    
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, MetronomeWord[i], 16, 2);
+    }
+
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[4], 0xFFFF, 0xFFFF, StringsWord[i], 16, 2);
+    }
+
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[5], 0xFFFF, 0xFFFF, GoBackWord[i], 16, 2);
+    }
+}
+
+void disp_changeVolume()
+{
+    LCD_Clear(0000, 0, 0, 0, 0);
+
+    for (int i = 0; i < 6; i++){
+        LCD_DrawChar(col[i], row[0], 0xFFFF, 0xFFFF, VolumeWord[i], 16, 2);
+    }
+
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[2], 0xFFFF, 0xFFFF, SongPlayerWord[i], 16, 2);
+    }
+    
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[3], 0xFFFF, 0xFFFF, MetronomeWord[i], 16, 2);
+    }
+
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[4], 0xFFFF, 0xFFFF, StringsWord[i], 16, 2);
+    }
+
+    for (int i = 0; i < 12; i++){
+        LCD_DrawChar(col[i], row[5], 0xFFFF, 0xFFFF, GoBackWord[i], 16, 2);
     }
 }
 
